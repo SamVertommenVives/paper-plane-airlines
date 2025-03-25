@@ -1,6 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaperPlaneAirlines", "PaperPlaneAirlines\PaperPlaneAirlines.csproj", "{448504BD-D7B9-4368-A962-3490A071DDE5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5} = {39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}
+		{61D0737F-FCC1-4267-A9EF-ACD0978E1B0B} = {61D0737F-FCC1-4267-A9EF-ACD0978E1B0B}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPA.Domains", "PPA.Domains\PPA.Domains.csproj", "{61D0737F-FCC1-4267-A9EF-ACD0978E1B0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPA.Repositories", "PPA.Repositories\PPA.Repositories.csproj", "{789AA7B7-C046-4E53-84FE-235DDD5AEBD3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{61D0737F-FCC1-4267-A9EF-ACD0978E1B0B} = {61D0737F-FCC1-4267-A9EF-ACD0978E1B0B}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPA.Services", "PPA.Services\PPA.Services.csproj", "{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{61D0737F-FCC1-4267-A9EF-ACD0978E1B0B} = {61D0737F-FCC1-4267-A9EF-ACD0978E1B0B}
+		{789AA7B7-C046-4E53-84FE-235DDD5AEBD3} = {789AA7B7-C046-4E53-84FE-235DDD5AEBD3}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +29,17 @@ Global
 		{448504BD-D7B9-4368-A962-3490A071DDE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{448504BD-D7B9-4368-A962-3490A071DDE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{448504BD-D7B9-4368-A962-3490A071DDE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61D0737F-FCC1-4267-A9EF-ACD0978E1B0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61D0737F-FCC1-4267-A9EF-ACD0978E1B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61D0737F-FCC1-4267-A9EF-ACD0978E1B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61D0737F-FCC1-4267-A9EF-ACD0978E1B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{789AA7B7-C046-4E53-84FE-235DDD5AEBD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{789AA7B7-C046-4E53-84FE-235DDD5AEBD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{789AA7B7-C046-4E53-84FE-235DDD5AEBD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{789AA7B7-C046-4E53-84FE-235DDD5AEBD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
