@@ -57,8 +57,9 @@ public partial class PPADbContext : DbContext
     public virtual DbSet<UserDiscount> UserDiscounts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=tcp:paperplaneairlines-server.database.windows.net,1433;Initial Catalog=Paper-plane-airlines;Persist Security Info=False;User ID=ppa-admin;Password=.aG87a@tC7hLrK#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;  Database=paper-plane-airlines;  User Id=sa;  Password=PpaAdm!nPwd;  Integrated Security=False;  TrustServerCertificate=True;  Encrypt=False");
+            //optionsBuilder.UseSqlServer("Server=tcp:paperplaneairlines-server.database.windows.net,1433;Initial Catalog=Paper-plane-airlines;Persist Security Info=False;User ID=ppa-admin;Password=.aG87a@tC7hLrK#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
