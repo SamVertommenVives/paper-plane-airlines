@@ -5,7 +5,7 @@ using PPA.Repositories.Interfaces;
 
 namespace PPA.Repositories;
 
-public class FlightDAO : IDAO<Flight>
+public class FlightDAO : IFlightDAO
 {
     private readonly PPADbContext _dbContext;
 
@@ -13,7 +13,7 @@ public class FlightDAO : IDAO<Flight>
     {
         _dbContext = dbContext;
     }
-    
+
     public async Task<IEnumerable<Flight>?> GetAllAsync()
     {
         try
@@ -53,6 +53,26 @@ public class FlightDAO : IDAO<Flight>
                 .Include(f => f.FlightRouteNavigation)
                 .Include(f => f.PlaneNavigation)
                 .FirstOrDefaultAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Flight>?> FindFlightsByDestinationAndDepartureDate(
+        City fromCity,
+        City toCity,
+        DateTime fromDate
+    )
+    {
+        try
+        {
+            return await _dbContext.Flights.Where(f => f.Departure == fromDate && f.FromCity.Equals(fromCity) && f.ToCity.Equals(toCity))
+                .Include(f => f.FlightRouteNavigation)
+                .Include(f => f.PlaneNavigation)
+                .ToListAsync();
         }
         catch (Exception e)
         {

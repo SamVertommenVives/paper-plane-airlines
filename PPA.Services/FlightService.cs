@@ -4,11 +4,11 @@ using PPA.Services.Interfaces;
 
 namespace PPA.Services;
 
-public class FlightService :IService<Flight>
+public class FlightService : IService<Flight>
 {
-    private readonly IDAO<Flight> _dao;
+    private readonly IFlightDAO _dao;
 
-    public FlightService(IDAO<Flight> dao)
+    public FlightService(IFlightDAO dao)
     {
         _dao = dao;
     }
@@ -37,5 +37,13 @@ public class FlightService :IService<Flight>
     public async Task<Flight?> FindByIdAsync(int Id)
     {
         return await _dao.FindByIdAsync(Id);
+    }
+
+    public async Task<IEnumerable<Flight>?> FindFlightsByDestinationAndDepartureDate(
+        City fromCity,
+        City toCity,
+        DateTime fromDate)
+    {
+        return await _dao.FindFlightsByDestinationAndDepartureDate(fromCity, toCity, fromDate);
     }
 }
