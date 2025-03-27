@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\PPA.Domains\PPA.Domains.csproj" />
+      <ProjectReference Include="..\PPA.Repositories\PPA.Repositories.csproj" />
+    </ItemGroup>
+
 </Project>
