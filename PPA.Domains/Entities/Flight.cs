@@ -19,6 +19,8 @@ public partial class Flight
 
     public int ToCity { get; set; }
 
+    public int SeatsBooked { get; set; }
+
     public virtual ICollection<FlightBooking> FlightBookings { get; set; } = new List<FlightBooking>();
 
     public virtual FlightRoute FlightRouteNavigation { get; set; } = null!;

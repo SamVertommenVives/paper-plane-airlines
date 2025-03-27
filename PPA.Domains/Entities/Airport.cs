@@ -11,13 +11,11 @@ public partial class Airport
 
     public string IATA { get; set; } = null!;
 
-    public int City { get; set; }
-
     public decimal Lat { get; set; }
 
     public decimal Lon { get; set; }
 
-    public virtual City CityNavigation { get; set; } = null!;
+    public virtual ICollection<City> Cities { get; set; } = new List<City>();
 
     public virtual ICollection<FlightRoute> FlightRouteAirport_1Navigations { get; set; } = new List<FlightRoute>();
 

@@ -7,15 +7,17 @@ public partial class Booking
 {
     public int Id { get; set; }
 
-    public int? User { get; set; }
+    public string User { get; set; } = null!;
 
     public int? Cancelation { get; set; }
 
-    public int FlightBooking { get; set; }
+    public int? UserDiscount { get; set; }
 
     public virtual Cancelation? CancelationNavigation { get; set; }
 
-    public virtual FlightBooking FlightBookingNavigation { get; set; } = null!;
-
     public virtual ICollection<FlightBooking> FlightBookings { get; set; } = new List<FlightBooking>();
+
+    public virtual UserDiscount? UserDiscountNavigation { get; set; }
+
+    public virtual AspNetUser UserNavigation { get; set; } = null!;
 }

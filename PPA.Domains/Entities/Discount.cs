@@ -18,4 +18,6 @@ public partial class Discount
     public string Type { get; set; } = null!;
 
     public virtual ICollection<CityDiscount> CityDiscounts { get; set; } = new List<CityDiscount>();
+
+    public virtual ICollection<UserDiscount> UserDiscounts { get; set; } = new List<UserDiscount>();
 }
