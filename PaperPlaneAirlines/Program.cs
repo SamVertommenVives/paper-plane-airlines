@@ -12,7 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-//add DbContext
+//add PPADbContext
 builder.Services.AddDbContext<PPADbContext>(options =>
     options.UseSqlServer(connectionString));
 
