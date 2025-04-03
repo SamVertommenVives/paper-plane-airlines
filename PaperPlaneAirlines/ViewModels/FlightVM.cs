@@ -1,8 +1,10 @@
+using PPA.Domains.Entities;
+
 namespace PaperPlaneAirlines.ViewModels;
 
 public class FlightVM
 {
-    public int Plane { get; set; }
+    public string Plane { get; set; }
 
     public int FlightRoute { get; set; }
 
@@ -10,7 +12,9 @@ public class FlightVM
 
     public DateTime Arrival { get; set; }
 
-    public int FromCity { get; set; }
+    public string FromCity { get; set; }
 
-    public int ToCity { get; set; }
+    public string ToCity { get; set; }
+    
+    public double FlightPrice { get; set; }
 }

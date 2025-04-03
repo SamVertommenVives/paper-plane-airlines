@@ -2,6 +2,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PaperPlaneAirlines.Data;
 using PPA.Domains.Data;
+using PPA.Domains.Entities;
+using PPA.Repositories;
+using PPA.Repositories.Interfaces;
+using PPA.Services;
+using PPA.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +28,22 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddTransient<IDAO<City>, CityDAO>();
+builder.Services.AddTransient<IFlightDAO, FlightDAO>();
+builder.Services.AddTransient<IDAO<Class>, ClassDAO>();
+
+builder.Services.AddTransient<IFlightService, FlightService>();
+builder.Services.AddTransient<IService<City>, CityService>();
+builder.Services.AddTransient<IService<Class>, ClassService>();
+
+builder.Services.AddDistributedMemoryCache(); // Required for Session
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+    options.Cookie.HttpOnly = true; // Security best practice
+    options.Cookie.IsEssential = true; // Ensure session is always stored
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -40,13 +61,15 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseSession();
+
 app.UseRouting();
 
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=FlightSearch}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();

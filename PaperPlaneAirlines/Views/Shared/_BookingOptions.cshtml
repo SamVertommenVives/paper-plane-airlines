@@ -1,0 +1,25 @@
+@model IEnumerable<PaperPlaneAirlines.ViewModels.BookingOptionVM>
+
+@foreach (var bookingOption in Model)
+{
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm">
+                    @await Html.PartialAsync("_FlightDetails", @bookingOption.OutboundFlight)
+                </div>
+                <div class="col-sm-1 align-content-center">
+                    <div class="row">
+                        <div class="fw-bold fs-6">
+                            € @bookingOption.BasePrice
+                        </div>
+                        <button type="submit" class="btn btn-light btn-outline-dark mt-1">
+                            🛒
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+}

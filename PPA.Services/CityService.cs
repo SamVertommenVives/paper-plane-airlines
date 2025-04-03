@@ -8,7 +8,7 @@ public class CityService : IService<City>
 {
     IDAO<City> _dao;
 
-    CityService(IDAO<City> dao)
+    public CityService(IDAO<City> dao)
     {
         _dao = dao;
     }

@@ -61,17 +61,18 @@ public class FlightDAO : IFlightDAO
         }
     }
 
-    public async Task<IEnumerable<Flight>?> FindFlightsByDestinationAndDepartureDate(
-        City fromCity,
-        City toCity,
-        DateTime fromDate
-    )
+    public async Task<IEnumerable<Flight>?> GetFirstTenBookableFlights()
     {
         try
         {
-            return await _dbContext.Flights.Where(f => f.Departure == fromDate && f.FromCity.Equals(fromCity) && f.ToCity.Equals(toCity))
+            return await _dbContext.Flights.Where(
+                    f => f.Departure > DateTime.Now.AddDays(3) && f.Departure < DateTime.Now.AddMonths(6))
                 .Include(f => f.FlightRouteNavigation)
                 .Include(f => f.PlaneNavigation)
+                .Include(f => f.FromCityNavigation)
+                .Include(f => f.ToCityNavigation)
+                .OrderBy(f => f.Departure)
+                .Take(10)
                 .ToListAsync();
         }
         catch (Exception e)
@@ -79,5 +80,55 @@ public class FlightDAO : IFlightDAO
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    public async Task<IEnumerable<Flight>?> FindFlightsByDestinationAndDepartureDate(
+        int fromCity,
+        int toCity,
+        DateTime fromDate
+    )
+    {
+        try
+        {
+            return await _dbContext.Flights.Where(f =>
+                    f.Departure >= fromDate && f.Departure <= fromDate.AddDays(1) && f.FromCity == fromCity &&
+                    f.ToCity == toCity)
+                .Include(f => f.FlightRouteNavigation)
+                .Include(f => f.PlaneNavigation)
+                .OrderBy(f => f.Departure)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    public async Task<IEnumerable<Flight>?> SearchFlights(FlightSearchCriteria searchCriteria)
+    {
+        var query = _dbContext.Flights.AsQueryable();
+
+        Console.WriteLine(searchCriteria.ToCity);
+
+        if (!string.IsNullOrEmpty(searchCriteria.FromCity))
+            query = query.Where(f => f.FromCityNavigation.Name == searchCriteria.FromCity);
+
+        if (!string.IsNullOrEmpty(searchCriteria.ToCity)) 
+            query = query.Where(f => f.ToCityNavigation.Name == searchCriteria.ToCity);
+        
+        
+        query = query.Where(f => f.Departure >= searchCriteria.FromDate && f.Departure <= searchCriteria.FromDate.AddDays(1));
+        
+        //query = query.Where(f => f.PlaneNavigation.EconomySeats - f.SeatsBooked >= searchCriteria.NumberOfPassengers);
+
+
+        return await query
+            .Include(f => f.FlightRouteNavigation)
+            .Include(f => f.PlaneNavigation)
+            .Include(f => f.FromCityNavigation)
+            .Include(f => f.ToCityNavigation)
+            .OrderBy(f => f.Departure)
+            .ToListAsync();
     }
 }

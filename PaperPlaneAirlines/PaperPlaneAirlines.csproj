@@ -27,10 +27,24 @@
 
     <ItemGroup>
       <ProjectReference Include="..\PPA.Domains\PPA.Domains.csproj" />
+      <ProjectReference Include="..\PPA.Services\PPA.Services.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Areas\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Booking\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\FlightSearch\Booking\Index.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Views\Booking\Index.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Views\Booking\Index.cshtml" />
     </ItemGroup>
 
 </Project>

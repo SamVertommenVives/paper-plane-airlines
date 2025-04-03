@@ -1,0 +1,19 @@
+@model PaperPlaneAirlines.ViewModels.FlightVM
+
+<div class="row">
+    <div class="col">
+        <div>@Model.FromCity</div>
+        <div class="fst-italic">
+            @Model.Departure.ToShortDateString()
+            @Model.Departure.ToShortTimeString()
+        </div>
+    </div>
+    <div class="col-1 align-content-center">→</div>
+    <div class="col">
+        <div>@Model.ToCity</div>
+        <div class="fst-italic">
+            @Model.Arrival.ToShortDateString()
+            @Model.Arrival.ToShortTimeString()
+        </div>
+    </div>
+</div>

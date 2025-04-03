@@ -1,0 +1,58 @@
+@model PaperPlaneAirlines.ViewModels.BookingVM
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<section class="mb-5">
+    <div class="card">
+        <div class="card-header">
+            <h3>Boeking selectie</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col">
+                    <div>@Model.FlightSearchCriteria?.FromCity</div>
+                </div>
+                <div class="col-1 align-content-center">
+                    →
+                </div>
+                <div class="col">
+                    <div>@Model.FlightSearchCriteria?.ToCity</div>
+                </div>
+                <div class="col">
+                    <div>👤 @Model.FlightSearchCriteria?.NumberOfPassengers</div>
+                </div>
+                <div class="col">
+                    <div>@Model.FlightSearchCriteria?.SelectedTravelClass</div>
+                </div>
+                @if (Model.OutboundFlight != null)
+                {
+                    <div class="row">
+                        @await Html.PartialAsync("_FlightDetails", @Model.OutboundFlight)
+                    </div>
+                }
+                @if (Model.ReturnFlight != null)
+                {
+                    <div class="row">
+                        @await Html.PartialAsync("_FlightDetails", @Model.ReturnFlight)
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="card">
+        <div class="card-header">
+            <h3>Selecteer een heenvlucht</h3>
+        </div>
+        <form asp-action="SelectReturnFlight" class="card-body">
+            <div asp-for="OutboundFlight">
+                @await Html.PartialAsync("_BookingOptions", @Model.BookingOptions)    
+            </div>
+        </form>
+    </div>
+</section>
