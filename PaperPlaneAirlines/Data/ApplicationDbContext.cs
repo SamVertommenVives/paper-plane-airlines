@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using PaperPlaneAirlines.ViewModels;
 
 namespace PaperPlaneAirlines.Data;
 
@@ -9,4 +10,6 @@ public class ApplicationDbContext : IdentityDbContext
         : base(options)
     {
     }
+
+public DbSet<PaperPlaneAirlines.ViewModels.MenuVM> MenuVM { get; set; } = default!;
 }

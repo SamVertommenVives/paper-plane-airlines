@@ -1,0 +1,50 @@
+@using PPA.Domains.Entities
+@model IEnumerable<PaperPlaneAirlines.ViewModels.FlightVM>
+
+<div class="row">
+    @foreach (var flight in Model)
+    {
+        if (Model.Count() < 2)
+        {
+            <div class="col">
+                <div> @flight.FromCity.Name </div>
+                <div class="fst-italic">
+                    @flight.Departure.ToShortDateString()
+                    @flight.Departure.ToShortTimeString()
+                </div>
+            </div>
+            <div class="col-1 align-content-center">→</div>
+            <div class="col">
+                <div>@flight.ToCity.Name</div>
+                <div class="fst-italic">
+                    @flight.Arrival.ToShortDateString()
+                    @flight.Arrival.ToShortTimeString()
+                </div>
+            </div>
+        }
+        else
+        {
+            if (Model.Last() == flight)
+            {
+                <div class="col">
+                    <div>@flight.ToCity.Name</div>
+                    <div class="fst-italic">
+                        @flight.Arrival.ToShortDateString()
+                        @flight.Arrival.ToShortTimeString()
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="col">
+                    <div> @flight.FromCity.Name </div>
+                    <div class="fst-italic">
+                        @flight.Departure.ToShortDateString()
+                        @flight.Departure.ToShortTimeString()
+                    </div>
+                </div>
+                <div class="col-1 align-content-center">→</div>
+            }
+        }
+    }
+</div>

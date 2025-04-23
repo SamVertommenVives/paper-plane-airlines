@@ -1,0 +1,27 @@
+@using PPA.Services
+@model List<PaperPlaneAirlines.ViewModels.BookingOptionVM>
+
+@foreach (var bookingOption in Model)
+{
+    <form asp-controller="Booking" asp-action="SetBookingOptionForSelectedFlight">
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm">
+                        @await Html.PartialAsync("_FlightDetailsPartial", bookingOption.Flights)
+                    </div>
+                    <div class=" form-group col-sm-2">
+
+                        <div class="fw-bold fs-6">
+                            @bookingOption.Price?.ToString("C")
+                        </div>
+                        <input type="hidden" name="flightOptionId" value="@bookingOption.BookingOptionId"/>
+                        <button type="submit" class="btn btn-light btn-outline-dark mt-1 w-75">
+                            🛒
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+}

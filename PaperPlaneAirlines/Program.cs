@@ -1,7 +1,15 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PaperPlaneAirlines.Controllers;
 using PaperPlaneAirlines.Data;
 using PPA.Domains.Data;
+using PPA.Domains.Entities;
+using PPA.Repositories;
+using PPA.Repositories.Interfaces;
+using PPA.Services;
+using PPA.Services.Interfaces;
+using SendMail.Util;
+using SendMail.Util.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +31,42 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IDAO<City>, CityDAO>();
+builder.Services.AddScoped<IFlightDAO, FlightDAO>();
+builder.Services.AddScoped<IDAO<Class>, ClassDAO>();
+builder.Services.AddScoped<IMenuDAO, MenuDAO>();
+builder.Services.AddScoped<IFlightRouteDAO, FlightRouteDAO>();
+builder.Services.AddScoped<IDAO<Booking>, BookingDAO>();
+builder.Services.AddScoped<IDAO<FlightBooking>, FlightBookingDAO>();
+
+builder.Services.AddScoped<IService<City>, CityService>();
+builder.Services.AddScoped<IFlightService, FlightService>();
+builder.Services.AddScoped<IService<Class>, ClassService>();
+builder.Services.AddScoped<IMenuService, MenuService>();
+builder.Services.AddScoped<IFlightRouteService, FlightRouteService>();
+builder.Services.AddScoped<IBookingOptionService, BookingOptionService>();
+builder.Services.AddScoped<IService<Booking>, BookingService>();
+builder.Services.AddScoped<IService<FlightBooking>, FlightBookingService>();
+//builder.Services.AddTransient<IService<Discount>, DiscountService>();
+
+builder.Services.AddScoped<IHotelService, HotelService>();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+//add HttpClientFactory
+builder.Services.AddHttpClient();
+
+//add Email Service
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton<IEmailSend, EmailSend>();
+builder.Services.AddScoped<SendController>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,11 +86,13 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=FlightSearch}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();

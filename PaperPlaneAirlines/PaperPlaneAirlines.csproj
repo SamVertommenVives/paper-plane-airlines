@@ -17,6 +17,7 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.15" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.14" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.14">
           <PrivateAssets>all</PrivateAssets>
@@ -27,6 +28,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\PPA.Domains\PPA.Domains.csproj" />
+      <ProjectReference Include="..\PPA.SendMail.Util\PPA.SendMail.Util.csproj" />
+      <ProjectReference Include="..\PPA.Services\PPA.Services.csproj" />
     </ItemGroup>
 
     <ItemGroup>

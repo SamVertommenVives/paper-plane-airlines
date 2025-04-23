@@ -57,9 +57,8 @@ public partial class PPADbContext : DbContext
     public virtual DbSet<UserDiscount> UserDiscounts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https: //go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=127.0.0.1,1433;  Database=paper-plane-airlines;  User Id=sa;  Password=PpaAdm!nPwd;  Integrated Security=False;  TrustServerCertificate=True;  Encrypt=False");
-            //optionsBuilder.UseSqlServer("Server=tcp:paperplaneairlines-server.database.windows.net,1433;Initial Catalog=Paper-plane-airlines;Persist Security Info=False;User ID=ppa-admin;Password=.aG87a@tC7hLrK#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -153,7 +152,11 @@ public partial class PPADbContext : DbContext
 
             entity.ToTable("Booking");
 
-            entity.Property(e => e.User).HasMaxLength(450);
+            entity.HasIndex(e => e.Cancelation, "IX_Booking_Cancelation");
+
+            entity.HasIndex(e => e.User, "IX_Booking_User");
+
+            entity.HasIndex(e => e.UserDiscount, "IX_Booking_UserDiscount");
 
             entity.HasOne(d => d.CancelationNavigation).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.Cancelation)
@@ -173,6 +176,8 @@ public partial class PPADbContext : DbContext
         {
             entity.ToTable("Cancelation");
 
+            entity.HasIndex(e => e.Refund, "IX_Cancelation_Refund");
+
             entity.Property(e => e.CanceledAt)
                 .HasDefaultValueSql("(sysdatetime())")
                 .HasColumnType("datetime");
@@ -186,6 +191,8 @@ public partial class PPADbContext : DbContext
         modelBuilder.Entity<City>(entity =>
         {
             entity.ToTable("City");
+
+            entity.HasIndex(e => e.Airport, "IX_City_Airport");
 
             entity.Property(e => e.Country)
                 .HasMaxLength(50)
@@ -204,6 +211,10 @@ public partial class PPADbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK_RouteDiscount");
 
             entity.ToTable("CityDiscount");
+
+            entity.HasIndex(e => e.City, "IX_CityDiscount_City");
+
+            entity.HasIndex(e => e.Discount, "IX_CityDiscount_Discount");
 
             entity.HasOne(d => d.CityNavigation).WithMany(p => p.CityDiscounts)
                 .HasForeignKey(d => d.City)
@@ -245,6 +256,14 @@ public partial class PPADbContext : DbContext
         {
             entity.ToTable("Flight");
 
+            entity.HasIndex(e => e.FlightRoute, "IX_Flight_FlightRoute");
+
+            entity.HasIndex(e => e.FromCity, "IX_Flight_FromCity");
+
+            entity.HasIndex(e => e.Plane, "IX_Flight_Plane");
+
+            entity.HasIndex(e => e.ToCity, "IX_Flight_ToCity");
+
             entity.Property(e => e.Arrival).HasColumnType("datetime");
             entity.Property(e => e.Departure).HasColumnType("datetime");
 
@@ -273,6 +292,16 @@ public partial class PPADbContext : DbContext
         {
             entity.ToTable("FlightBooking");
 
+            entity.HasIndex(e => e.Booking, "IX_FlightBooking_Booking");
+
+            entity.HasIndex(e => e.Class, "IX_FlightBooking_Class");
+
+            entity.HasIndex(e => e.Flight, "IX_FlightBooking_Flight");
+
+            entity.HasIndex(e => e.FlightDiscount, "IX_FlightBooking_FlightDiscount");
+
+            entity.HasIndex(e => e.Meal, "IX_FlightBooking_Meal");
+
             entity.Property(e => e.SeatNumber).HasMaxLength(50);
 
             entity.HasOne(d => d.BookingNavigation).WithMany(p => p.FlightBookings)
@@ -296,13 +325,16 @@ public partial class PPADbContext : DbContext
 
             entity.HasOne(d => d.MealNavigation).WithMany(p => p.FlightBookings)
                 .HasForeignKey(d => d.Meal)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FlightBooking_Meal");
         });
 
         modelBuilder.Entity<FlightRoute>(entity =>
         {
-            entity.ToTable("FlightRoute", tb => tb.HasTrigger("trg_CalculateDistance"));
+            entity.ToTable("FlightRoute");
+
+            entity.HasIndex(e => e.Airport_1, "IX_FlightRoute_Airport_1");
+
+            entity.HasIndex(e => e.Airport_2, "IX_FlightRoute_Airport_2");
 
             entity.HasOne(d => d.Airport_1Navigation).WithMany(p => p.FlightRouteAirport_1Navigations)
                 .HasForeignKey(d => d.Airport_1)
@@ -318,6 +350,8 @@ public partial class PPADbContext : DbContext
         modelBuilder.Entity<Meal>(entity =>
         {
             entity.ToTable("Meal");
+
+            entity.HasIndex(e => e.LocalMealFor, "IX_Meal_LocalMealFor");
 
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.Name)
@@ -358,7 +392,9 @@ public partial class PPADbContext : DbContext
         {
             entity.ToTable("UserDiscount");
 
-            entity.Property(e => e.User).HasMaxLength(450);
+            entity.HasIndex(e => e.Discount, "IX_UserDiscount_Discount");
+
+            entity.HasIndex(e => e.User, "IX_UserDiscount_User");
 
             entity.HasOne(d => d.DiscountNavigation).WithMany(p => p.UserDiscounts)
                 .HasForeignKey(d => d.Discount)

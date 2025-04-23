@@ -1,0 +1,40 @@
+@model PaperPlaneAirlines.ViewModels.MenuSelectionVM
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<section class="mb-5">
+    <div class="card">
+        <div class="card-body">
+            @await Html.PartialAsync("_FlightDetailsPartial", @Model.BookingOption.Flights)
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="card">
+        <div class="card-header">
+            <h3>Selecteer een menu</h3>
+        </div>
+
+        <div class="card-body">
+            <div class="fw-bold"> Local Menus</div>
+            @foreach (var menu in Model.LocalMenus)
+            {
+                @await Html.PartialAsync("_MenuDetailsPartial", menu)
+            }
+
+            <div class="fw-bold"> Standaard Menus</div>
+            @foreach (var menu in Model.StandardMenus)
+            {
+                @await Html.PartialAsync("_MenuDetailsPartial", menu)
+            }
+        </div>
+
+    </div>
+</section>
+
+
+

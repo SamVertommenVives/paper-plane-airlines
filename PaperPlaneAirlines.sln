@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPA.Services", "PPA.Service
 		{789AA7B7-C046-4E53-84FE-235DDD5AEBD3} = {789AA7B7-C046-4E53-84FE-235DDD5AEBD3}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PPA.SendMail.Util", "PPA.SendMail.Util\PPA.SendMail.Util.csproj", "{657BFADA-E6A7-4182-BBA4-A03CC41B867A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,5 +43,9 @@ Global
 		{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39F7DDF6-61F0-45EC-8ADA-E3F2BC5CB0A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{657BFADA-E6A7-4182-BBA4-A03CC41B867A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{657BFADA-E6A7-4182-BBA4-A03CC41B867A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{657BFADA-E6A7-4182-BBA4-A03CC41B867A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{657BFADA-E6A7-4182-BBA4-A03CC41B867A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

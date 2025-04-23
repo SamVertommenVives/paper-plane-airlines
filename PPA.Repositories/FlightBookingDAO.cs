@@ -34,12 +34,13 @@ public class FlightBookingDAO : IDAO<FlightBooking>
         }
     }
 
-    public async Task AddAsync(FlightBooking entity)
+    public async Task<int> AddAsync(FlightBooking entity)
     {
         _dbContext.FlightBookings.Add(entity);
         try
         {
             await _dbContext.SaveChangesAsync();
+            return entity.Id;
         }
         catch (Exception e)
         {

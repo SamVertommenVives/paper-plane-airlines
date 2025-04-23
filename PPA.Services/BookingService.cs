@@ -17,9 +17,10 @@ public class BookingService : IService<Booking>
         return await _dao.GetAllAsync();
     }
 
-    public async Task AddAsync(Booking entity)
+    public async Task<int> AddAsync(Booking entity)
     {
         await _dao.AddAsync(entity);
+        return entity.Id;
     }
 
     public async Task DeleteAsync(Booking entity)

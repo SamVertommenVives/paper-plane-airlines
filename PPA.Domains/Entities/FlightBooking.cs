@@ -11,7 +11,7 @@ public partial class FlightBooking
 
     public int Flight { get; set; }
 
-    public int Meal { get; set; }
+    public int? Meal { get; set; }
 
     public string SeatNumber { get; set; } = null!;
 
@@ -27,5 +27,5 @@ public partial class FlightBooking
 
     public virtual Flight FlightNavigation { get; set; } = null!;
 
-    public virtual Meal MealNavigation { get; set; } = null!;
+    public virtual Meal? MealNavigation { get; set; }
 }

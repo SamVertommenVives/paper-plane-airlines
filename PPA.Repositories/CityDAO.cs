@@ -11,6 +11,7 @@ public class CityDAO : IDAO<City>
 
     public CityDAO(PPADbContext dbContext)
     {
+        Console.WriteLine("CityDAO created");
         _dbContext = dbContext;
     }
     
@@ -29,7 +30,7 @@ public class CityDAO : IDAO<City>
         }
     }
 
-    public async Task AddAsync(City entity)
+    public async Task<int> AddAsync(City entity)
     {
         throw new NotImplementedException();
     }
@@ -48,6 +49,10 @@ public class CityDAO : IDAO<City>
     {
         try
         {
+            Console.WriteLine("FindByIdAsync executing");
+            Console.WriteLine($"DbContext is disposed: {_dbContext == null || _dbContext.Database.GetDbConnection() == null}");
+            Console.WriteLine(id);
+            
             return await _dbContext.Cities.Where(c => c.Id == id)
                 .Include(c => c.AirportNavigation)
                 .FirstOrDefaultAsync();

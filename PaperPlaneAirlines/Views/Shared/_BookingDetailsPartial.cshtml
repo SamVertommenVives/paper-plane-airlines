@@ -1,0 +1,125 @@
+@model PaperPlaneAirlines.ViewModels.BookingVM
+
+
+<div class="card">
+    <div class="card-header">
+        <h3>Boeking Details</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <div>@Model.FromCity?.Name</div>
+                <div class="fst-italic">@Model.FromCity?.AirportName</div>
+            </div>
+            <div class="col-1 align-content-center">
+                →
+            </div>
+            <div class="col">
+                <div>@Model.ToCity?.Name</div>
+                <div class="fst-italic">@Model.ToCity?.AirportName</div>
+            </div>
+            <div class="col">
+                <div>👤 @Model.NumberOfPassengers</div>
+            </div>
+            <div class="col">
+                <div>@Model.TravelClass?.SeatClass</div>
+            </div>
+        </div>
+        @if (Model.OutboundFlight != null)
+        {
+            var totalPriceOutboundFlight = Model.OutboundFlight.Price + (Model.OutboundFlight.Menu?.Price ?? 0);
+            <h5 class="mt-3">Heenvlucht € @totalPriceOutboundFlight</h5>
+            
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            @await Html.PartialAsync("_FlightDetailsPartial", @Model.OutboundFlight.Flights)
+                        </div>
+
+                        @if (Model.OutboundFlight.Menu == null)
+                        {
+                            <div class="col-sm-2">
+                                <form asp-action="SelectMenu" asp-controller="Booking">
+                                    <input type="hidden" name="flightType"
+                                           value="@Model.OutboundFlight.FlightType"/>
+                                    <button type="submit" class="btn btn-light btn-outline-dark mt-1">
+                                        Add a menu
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-2">
+                                @Model.OutboundFlight.Menu.Name
+                            </div>
+                            <div class="col-sm-2">
+                                <form asp-action="SelectMenu" asp-controller="Booking">
+                                    <input type="hidden" name="flightType"
+                                           value="@Model.OutboundFlight.FlightType"/>
+                                    <button type="submit" class="btn btn-light btn-outline-dark mt-1">
+                                        Change menu
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.ReturnFlight != null)
+        {
+            var totalPriceReturnFlight = Model.ReturnFlight.Price + (Model.ReturnFlight.Menu?.Price ?? 0);
+            <h5 class="fs-5 mt-3">Terugvlucht : @totalPriceReturnFlight</h5>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            @await Html.PartialAsync("_FlightDetailsPartial", @Model.ReturnFlight.Flights)
+                        </div>
+
+                        @if (Model.ReturnFlight.Menu == null)
+                        {
+                            <div class="col-sm-2">
+                                <form asp-action="SelectMenu" asp-controller="Booking">
+                                    <input type="hidden" name="flightType"
+                                           value=" @Model.ReturnFlight.FlightType"/>
+                                    <button type="submit" class="btn btn-light btn-outline-dark mt-1">
+                                        Add a menu
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-sm-2">
+                                @Model.ReturnFlight.Menu.Name
+                            </div>
+                            <div class="col-sm-2">
+                                <form asp-action="SelectMenu" asp-controller="Booking">
+                                    <input type="hidden" name="flightType"
+                                           value="@Model.ReturnFlight.FlightType"/>
+                                    <button type="submit" class="btn btn-light btn-outline-dark mt-1">
+                                        Change menu
+                                    </button>
+                                </form>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @if (Model.OutboundFlight != null)
+    {
+        var totalPrice = Model.OutboundFlight.Price
+            + (Model.ReturnFlight?.Price ?? 0)
+            + (Model.OutboundFlight?.Menu?.Price ?? 0)
+            + (Model.ReturnFlight?.Menu?.Price ?? 0);
+        
+        <div class="card-footer">
+            Total price : € @totalPrice
+        </div>    
+    }
+</div>

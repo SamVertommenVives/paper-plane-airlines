@@ -11,7 +11,7 @@ public partial class City
 
     public string Country { get; set; } = null!;
 
-    public int? Airport { get; set; }
+    public int Airport { get; set; }
 
     public virtual Airport? AirportNavigation { get; set; }
 

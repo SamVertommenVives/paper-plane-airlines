@@ -15,6 +15,8 @@ public partial class Meal
 
     public int? LocalMealFor { get; set; }
 
+    public double? Price { get; set; }
+
     public virtual ICollection<FlightBooking> FlightBookings { get; set; } = new List<FlightBooking>();
 
     public virtual City? LocalMealForNavigation { get; set; }
