@@ -53,40 +53,43 @@ public class HotelService : IHotelService
 
         var hotels = new List<Hotel>();
 
-        for (int i = 0; i < 4 ; i++)
+        if (result.data.hotels != null)
         {
-            string hotelId = result.data.hotels[i].hotel_id;
-
-            // Get details
-            var detailsUrl =
-                $"https://{_apiHost}/api/v1/hotels/getHotelDetails?hotel_id={hotelId}&arrival_date={from}&departure_date={to}&adults=2";
-            var detailsReq = new HttpRequestMessage(HttpMethod.Get, detailsUrl);
-            detailsReq.Headers.Add("X-RapidAPI-Key", _apiKey);
-            detailsReq.Headers.Add("X-RapidAPI-Host", _apiHost);
-            var detailsResp = await _httpClient.SendAsync(detailsReq);
-            var detailsJson = await detailsResp.Content.ReadAsStringAsync();
-            dynamic details = JsonConvert.DeserializeObject(detailsJson)!;
-
-            // Get photo
-            var photoUrl = $"https://{_apiHost}/api/v1/hotels/getHotelPhotos?hotel_id={hotelId}";
-            var photoReq = new HttpRequestMessage(HttpMethod.Get, photoUrl);
-            photoReq.Headers.Add("X-RapidAPI-Key", _apiKey);
-            photoReq.Headers.Add("X-RapidAPI-Host", _apiHost);
-            var photoResp = await _httpClient.SendAsync(photoReq);
-            var photoJson = await photoResp.Content.ReadAsStringAsync();
-            dynamic photos = JsonConvert.DeserializeObject(photoJson)!;
-            string imageUrl = photos.data?[0]?.url ?? "";
-
-            hotels.Add(new Hotel
+            for (int i = 0; i < 4 ; i++)
             {
-                Name = details.data.hotel_name,
-                Address = details.data.address,
-                City = details.data.city,
-                Url = details.data.url,
-                ImageUrl = imageUrl
-            });
-        }
+                string hotelId = result.data.hotels[i].hotel_id;
 
+                // Get details
+                var detailsUrl =
+                    $"https://{_apiHost}/api/v1/hotels/getHotelDetails?hotel_id={hotelId}&arrival_date={from}&departure_date={to}&adults=2";
+                var detailsReq = new HttpRequestMessage(HttpMethod.Get, detailsUrl);
+                detailsReq.Headers.Add("X-RapidAPI-Key", _apiKey);
+                detailsReq.Headers.Add("X-RapidAPI-Host", _apiHost);
+                var detailsResp = await _httpClient.SendAsync(detailsReq);
+                var detailsJson = await detailsResp.Content.ReadAsStringAsync();
+                dynamic details = JsonConvert.DeserializeObject(detailsJson)!;
+
+                // Get photo
+                var photoUrl = $"https://{_apiHost}/api/v1/hotels/getHotelPhotos?hotel_id={hotelId}";
+                var photoReq = new HttpRequestMessage(HttpMethod.Get, photoUrl);
+                photoReq.Headers.Add("X-RapidAPI-Key", _apiKey);
+                photoReq.Headers.Add("X-RapidAPI-Host", _apiHost);
+                var photoResp = await _httpClient.SendAsync(photoReq);
+                var photoJson = await photoResp.Content.ReadAsStringAsync();
+                dynamic photos = JsonConvert.DeserializeObject(photoJson)!;
+                string imageUrl = photos.data?[0]?.url ?? "";
+
+                hotels.Add(new Hotel
+                {
+                    Name = details.data.hotel_name,
+                    Address = details.data.address,
+                    City = details.data.city,
+                    Url = details.data.url,
+                    ImageUrl = imageUrl
+                });
+            } 
+        }
+        
         return hotels;
     }
 }

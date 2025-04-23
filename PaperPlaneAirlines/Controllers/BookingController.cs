@@ -19,9 +19,10 @@ public class BookingController : Controller
     private readonly IService<FlightBooking> _flightBookingService;
     private readonly IMapper _mapper;
     private readonly IHotelService _hotelService;
+    private readonly SendController _sendController;
 
     public BookingController(IBookingOptionService bookingOptionService, IMapper mapper, IService<City> cityService,
-        IService<Class> classService, IMenuService menuService, IService<Booking> bookingService, IService<FlightBooking> flightBookingService, IHotelService hotelService)
+        IService<Class> classService, IMenuService menuService, IService<Booking> bookingService, IService<FlightBooking> flightBookingService, IHotelService hotelService, SendController sendController)
     {
         _bookingOptionService = bookingOptionService;
         _mapper = mapper;
@@ -31,6 +32,7 @@ public class BookingController : Controller
         _bookingService = bookingService;
         _flightBookingService = flightBookingService;
         _hotelService = hotelService;
+        _sendController = sendController;
     }
 
     public async Task<IActionResult> BookingOverview()
@@ -109,6 +111,22 @@ public class BookingController : Controller
             
         }
         
+        var email = User?.FindFirstValue(ClaimTypes.Email);
+        if (email != null)
+        {
+            try
+            {
+
+                Console.WriteLine("trying to send email to user");
+                await _sendController.SendConfirmationEmail(email);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         var hotelsList = await _hotelService.GetHotelsAsync(booking.ToCity.Name, booking.FromDate, booking.ToDate);
         var hotels = _mapper.Map<List<HotelVM>>(hotelsList);
 
@@ -308,7 +326,6 @@ public class BookingController : Controller
 
         var selectedMenu = await _menuService.FindByIdAsync(selectedMenuId);
         
-        //moet verbeterd worden, extra param in de functie en extra hidden input in de view?
         var selectedFlight = selection.BookingOption.FlightType == FlightType.Outbound
             ? booking.OutboundFlight
             : booking.ReturnFlight;

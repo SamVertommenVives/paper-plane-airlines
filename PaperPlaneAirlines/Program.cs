@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PaperPlaneAirlines.Controllers;
 using PaperPlaneAirlines.Data;
 using PPA.Domains.Data;
 using PPA.Domains.Entities;
@@ -7,6 +8,8 @@ using PPA.Repositories;
 using PPA.Repositories.Interfaces;
 using PPA.Services;
 using PPA.Services.Interfaces;
+using SendMail.Util;
+using SendMail.Util.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +60,12 @@ builder.Services.AddSession(options =>
 
 //add HttpClientFactory
 builder.Services.AddHttpClient();
+
+//add Email Service
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton<IEmailSend, EmailSend>();
+builder.Services.AddScoped<SendController>();
+
 
 var app = builder.Build();
 
