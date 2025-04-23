@@ -37,7 +37,7 @@ public class HotelService : IHotelService
         if (string.IsNullOrEmpty(destId)) return new();
 
         var from = fromDate.ToString("yyyy-MM-dd");
-        var to = toDate?.ToString("yyyy-MM-dd") ?? "";
+        var to = fromDate.AddDays(7).ToString("yyyy-MM-dd");
 
         var url =
             $"https://{_apiHost}/api/v1/hotels/searchHotels?dest_id={destId}&search_type=CITY&arrival_date={from}&departure_date={to}&adults=2";
@@ -50,12 +50,20 @@ public class HotelService : IHotelService
 
         var json = await response.Content.ReadAsStringAsync();
         dynamic result = JsonConvert.DeserializeObject(json)!;
+        
+        Console.WriteLine(result.ToString());
 
         var hotels = new List<Hotel>();
 
-        if (result.data.hotels != null)
+        if (result?.data?.hotels != null)
         {
-            for (int i = 0; i < 4 ; i++)
+            var hotelArray = result.data.hotels;
+            
+            Console.WriteLine($"Found {hotelArray.Count} hotels");
+            
+            int count = Math.Min(4, hotelArray.Count);
+
+            for (int i = 0; i < count; i++)
             {
                 string hotelId = result.data.hotels[i].hotel_id;
 
