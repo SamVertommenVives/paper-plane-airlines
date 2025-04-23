@@ -1,0 +1,10 @@
+@model PaperPlaneAirlines.ViewModels.HotelVM
+
+<div class="card p-2 m-2" style="width: 18rem;">
+    <img src="@Model.ImageUrl" class="card-img-top rounded" alt="@Model.Name" />
+    <div class="card-body">
+        <h5 class="card-title">@Model.Name</h5>
+        <p class="card-text">@Model.Address, @Model.City</p>
+        <a href="@Model.Url" target="_blank" class="btn btn-sm btn-primary">View</a>
+    </div>
+</div>

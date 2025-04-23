@@ -30,7 +30,7 @@ public class FlightDAO : IFlightDAO
         }
     }
 
-    public async Task AddAsync(Flight entity)
+    public async Task<int> AddAsync(Flight entity)
     {
         throw new NotImplementedException();
     }
@@ -61,17 +61,18 @@ public class FlightDAO : IFlightDAO
         }
     }
 
-    public async Task<IEnumerable<Flight>?> FindFlightsByDestinationAndDepartureDate(
-        City fromCity,
-        City toCity,
-        DateTime fromDate
-    )
+    public async Task<IEnumerable<Flight>?> GetFirstTenBookableFlights()
     {
         try
         {
-            return await _dbContext.Flights.Where(f => f.Departure == fromDate && f.FromCity.Equals(fromCity) && f.ToCity.Equals(toCity))
+            return await _dbContext.Flights.Where(
+                    f => f.Departure > DateTime.Now.AddDays(3) && f.Departure < DateTime.Now.AddMonths(6))
                 .Include(f => f.FlightRouteNavigation)
                 .Include(f => f.PlaneNavigation)
+                .Include(f => f.FromCityNavigation)
+                .Include(f => f.ToCityNavigation)
+                .OrderBy(f => f.Departure)
+                .Take(10)
                 .ToListAsync();
         }
         catch (Exception e)
@@ -80,4 +81,48 @@ public class FlightDAO : IFlightDAO
             throw;
         }
     }
+
+    public async Task<IEnumerable<Flight>?> SearchFlights(
+        int fromCityId,
+        int? toCityId,
+        DateTime fromDate
+    )
+    {
+        var query = _dbContext.Flights.AsQueryable();
+
+        query = query.Where(f => f.FromCityNavigation.Id == fromCityId);
+
+        if (toCityId == null)
+            query = query.Where(f => f.ToCityNavigation.Id == toCityId);
+
+
+        query = query.Where(f => f.Departure >= fromDate && f.Departure <= fromDate.AddDays(1));
+
+        //query = query.Where(f => f.PlaneNavigation.EconomySeats - f.SeatsBooked >= searchCriteria.NumberOfPassengers);
+
+
+        return await query
+            .Include(f => f.FlightRouteNavigation)
+            .Include(f => f.PlaneNavigation)
+            .Include(f => f.FromCityNavigation)
+            .Include(f => f.ToCityNavigation)
+            .OrderBy(f => f.Departure)
+            .ToListAsync();
+    }
+
+    public async Task<Flight?> GetNextFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers)
+    {
+        var flights = await _dbContext.Flights
+            .Where(f => f.FlightRoute == routeId && f.Departure >= minDepartureDate)
+            .Include(f => f.FlightRouteNavigation)
+            .Include(f => f.PlaneNavigation)
+            .Include(f => f.FromCityNavigation)
+            .Include(f => f.ToCityNavigation)
+            .OrderBy(f => f.Departure)
+            .ToListAsync();
+
+        return flights
+            .FirstOrDefault(f => f.PlaneNavigation.EconomySeats - f.SeatsBooked >= numberOfPassengers);
+    }
+
 }

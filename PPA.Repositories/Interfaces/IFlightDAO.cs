@@ -1,8 +1,11 @@
+using System.Collections;
 using PPA.Domains.Entities;
 
 namespace PPA.Repositories.Interfaces;
 
 public interface IFlightDAO : IDAO<Flight>
 {
-    Task<IEnumerable<Flight>?> FindFlightsByDestinationAndDepartureDate(City fromCity, City toCity, DateTime fromDate);
+    Task<IEnumerable<Flight>?> GetFirstTenBookableFlights();
+    Task<IEnumerable<Flight>?> SearchFlights(int fromCityId, int? toCityId, DateTime fromDate);
+    Task<Flight?> GetNextFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers);
 }

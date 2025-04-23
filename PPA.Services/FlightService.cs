@@ -4,7 +4,7 @@ using PPA.Services.Interfaces;
 
 namespace PPA.Services;
 
-public class FlightService : IService<Flight>
+public class FlightService : IFlightService
 {
     private readonly IFlightDAO _dao;
 
@@ -19,9 +19,10 @@ public class FlightService : IService<Flight>
         return await _dao.GetAllAsync();
     }
 
-    public async Task AddAsync(Flight entity)
+    public async Task<int> AddAsync(Flight entity)
     {
         await _dao.AddAsync(entity);
+        return entity.Id;
     }
 
     public async Task DeleteAsync(Flight entity)
@@ -39,11 +40,18 @@ public class FlightService : IService<Flight>
         return await _dao.FindByIdAsync(Id);
     }
 
-    public async Task<IEnumerable<Flight>?> FindFlightsByDestinationAndDepartureDate(
-        City fromCity,
-        City toCity,
-        DateTime fromDate)
+    public async Task<IEnumerable<Flight>?> GetFirstTenBookableFlights()
     {
-        return await _dao.FindFlightsByDestinationAndDepartureDate(fromCity, toCity, fromDate);
+        return await _dao.GetFirstTenBookableFlights();
+    }
+
+    public async Task<IEnumerable<Flight>?> SearchFlights(int fromCityId, int? toCityId, DateTime fromDate)
+    {
+        return await _dao.SearchFlights(fromCityId, toCityId, fromDate);
+    }
+
+    public async Task<Flight?> GetNextFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers)
+    {
+        return await _dao.GetNextFlightForRoute(routeId, minDepartureDate, numberOfPassengers);
     }
 }

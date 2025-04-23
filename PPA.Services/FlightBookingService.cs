@@ -7,7 +7,7 @@ namespace PPA.Services;
 public class FlightBookingService : IService<FlightBooking>
 {
     IDAO<FlightBooking> _dao;
-    FlightBookingService(IDAO<FlightBooking> dao)
+    public FlightBookingService(IDAO<FlightBooking> dao)
     { 
         _dao = dao;
     }
@@ -17,9 +17,10 @@ public class FlightBookingService : IService<FlightBooking>
         return await _dao.GetAllAsync();
     }
 
-    public async Task AddAsync(FlightBooking entity)
+    public async Task<int> AddAsync(FlightBooking entity)
     {
         await _dao.AddAsync(entity);
+        return entity.Id;
     }
 
     public async Task DeleteAsync(FlightBooking entity)

@@ -31,12 +31,13 @@ public class BookingDAO : IDAO<Booking>
         }
     }
 
-    public async Task AddAsync(Booking entity)
+    public async Task<int> AddAsync(Booking entity)
     {
         _dbContext.Entry(entity).State = EntityState.Added;
         try
         {
             await _dbContext.SaveChangesAsync();
+            return entity.Id;
         }
         catch (Exception e)
         {

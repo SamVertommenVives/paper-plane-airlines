@@ -1,0 +1,28 @@
+@model PaperPlaneAirlines.ViewModels.MenuVM
+
+
+<form asp-action="SetMenuForFlightOption" class="card-body">
+    <div class="card mb-2">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm">
+                    @Model.Name
+                </div>
+                <div class="col-7">
+                    @Model.Description
+                </div>
+                <div class="col-sm-2 align-content-center">
+
+                    <div class="fw-bold fs-6">
+                        @Model.Price?.ToString("C")
+                    </div>
+                
+                    <input type="hidden" name="selectedMenuId" value="@Model.Id"/>
+                    <button type="submit" class="btn btn-light btn-outline-dark mt-1 w-75">
+                        Add to Flight
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

@@ -1,0 +1,17 @@
+@model PaperPlaneAirlines.ViewModels.BookingVM
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<section class="mb-5">
+    @await Html.PartialAsync("_BookingDetailsPartial", Model)
+</section>
+<form method="post" asp-action="ConfirmBooking" asp-controller="Booking">
+    <div class="row mb-2">
+        <div class="form-group align-content-center col">
+            <button type="submit" class="btn btn-light btn-outline-dark w-100">Bevestig uw Boeking</button>
+        </div>
+    </div>
+</form>

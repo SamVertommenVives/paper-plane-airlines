@@ -6,9 +6,9 @@ namespace PPA.Services;
 
 public class CityService : IService<City>
 {
-    IDAO<City> _dao;
+    private readonly IDAO<City> _dao;
 
-    CityService(IDAO<City> dao)
+    public CityService(IDAO<City> dao)
     {
         _dao = dao;
     }
@@ -18,9 +18,10 @@ public class CityService : IService<City>
         return await _dao.GetAllAsync();
     }
 
-    public async Task AddAsync(City entity)
+    public async Task<int> AddAsync(City entity)
     {
         await _dao.AddAsync(entity);
+        return entity.Id;
     }
 
     public async Task DeleteAsync(City entity)
