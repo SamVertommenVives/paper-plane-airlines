@@ -1,5 +1,4 @@
-@using System.Net
-@model List<PaperPlaneAirlines.ViewModels.HotelVM>;
+@model PaperPlaneAirlines.ViewModels.BookingVM;
 
 @{
     ViewData["Title"] = "Booking Confirmed";
@@ -13,12 +12,30 @@
         <a href="/" class="btn btn-light btn-outline-dark mt-4 w-auto align-self-center">Zoek een volgende vlucht</a>
     </div>
     <div class="mt-5">
-        <h2 class="mb-3">Interessante Hotels in @Model[0].City</h2>
-        <div id="hotel-list" class="d-flex flex-wrap justify-content-center gap-3">
-            @foreach (var hotel in Model)
-            {
-                @await Html.PartialAsync("_HotelDetailsPartial", hotel)
-            }
+        <h2 class="mb-3">Interessante Hotels in @Model.ToCity.Name</h2>
+        <div class="row" id="hotels-placeholder">
+            <p>Loading...<p/>
         </div>
     </div>
 </div>
+
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            const toCity = '@Model.ToCity.Name';
+            const fromDate = '@Model.FromDate.ToString("yyyy-MM-dd")';
+            const toDate = '@Model.FromDate.AddDays(5)';
+
+            $.get("/Booking/GetHotelsPartial/", {
+                toCity: toCity,
+                fromDate: fromDate,
+                toDate: toDate
+            }).done(function (html) {
+                $("#hotels-placeholder").html(html);
+            }).fail(function () {
+                $("#hotels-placeholder").html("<p>Failed to load hotels.</p>");
+            });
+        });
+    </script>
+}

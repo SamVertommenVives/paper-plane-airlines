@@ -1,10 +1,21 @@
-@model PaperPlaneAirlines.ViewModels.HotelVM
+@model List<PaperPlaneAirlines.ViewModels.HotelVM>
 
-<div class="card p-2 m-2" style="width: 18rem;">
-    <img src="@Model.ImageUrl" class="card-img-top rounded" alt="@Model.Name" />
-    <div class="card-body">
-        <h5 class="card-title">@Model.Name</h5>
-        <p class="card-text">@Model.Address, @Model.City</p>
-        <a href="@Model.Url" target="_blank" class="btn btn-sm btn-primary">View</a>
-    </div>
-</div>
+@foreach (var hotel in Model)
+{
+    if (Model.Any())
+    {
+        <div class="card p-2 m-2" style="width: 18rem;">
+            <img src="@hotel.ImageUrl" class="card-img-top rounded" alt="@hotel.Name" />
+            <div class="card-body">
+                <h5 class="card-title">@hotel.Name</h5>
+                <p class="card-text">@hotel.Address, @hotel.City</p>
+                <a href="@hotel.Url" target="_blank" class="btn btn-sm btn-primary">View</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Er werden helaas geen hotels gevonden voor uw bestemming.</p>
+    }
+    
+}

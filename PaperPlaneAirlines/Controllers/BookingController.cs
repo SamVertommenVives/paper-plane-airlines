@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using PaperPlaneAirlines.Models;
@@ -70,6 +71,7 @@ public class BookingController : Controller
         return await BookingOverview();
     }
     
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult>
         ConfirmBooking()
@@ -126,11 +128,17 @@ public class BookingController : Controller
                 throw;
             }
         }
-
-        var hotelsList = await _hotelService.GetHotelsAsync(booking.ToCity.Name, booking.FromDate, booking.ToDate);
+        
+        return View("BookingConfirmed", booking);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetHotelsPartial(string toCity, DateTime fromDate, DateTime toDate)
+    {
+        var hotelsList = await _hotelService.GetHotelsAsync(toCity, fromDate, toDate);
         var hotels = _mapper.Map<List<HotelVM>>(hotelsList);
 
-        return View("BookingConfirmed", hotels);
+        return PartialView("_HotelDetailsPartial", hotels);
     }
 
     private async Task AddBookingToDb(string userId, BookingOptionVM bookingOption, int travelClassId)
