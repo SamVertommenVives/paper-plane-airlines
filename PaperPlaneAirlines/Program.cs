@@ -37,7 +37,7 @@ builder.Services.AddScoped<IDAO<Class>, ClassDAO>();
 builder.Services.AddScoped<IMenuDAO, MenuDAO>();
 builder.Services.AddScoped<IFlightRouteDAO, FlightRouteDAO>();
 builder.Services.AddScoped<IDAO<Booking>, BookingDAO>();
-builder.Services.AddScoped<IDAO<FlightBooking>, FlightBookingDAO>();
+builder.Services.AddScoped<IFlightBookingDAO, FlightBookingDAO>();
 
 builder.Services.AddScoped<IService<City>, CityService>();
 builder.Services.AddScoped<IFlightService, FlightService>();
@@ -46,7 +46,7 @@ builder.Services.AddScoped<IMenuService, MenuService>();
 builder.Services.AddScoped<IFlightRouteService, FlightRouteService>();
 builder.Services.AddScoped<IBookingOptionService, BookingOptionService>();
 builder.Services.AddScoped<IService<Booking>, BookingService>();
-builder.Services.AddScoped<IService<FlightBooking>, FlightBookingService>();
+builder.Services.AddScoped<IFlightBookingService, FlightBookingService>();
 //builder.Services.AddTransient<IService<Discount>, DiscountService>();
 
 builder.Services.AddScoped<IHotelService, HotelService>();

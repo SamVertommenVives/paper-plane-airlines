@@ -4,10 +4,10 @@ using PPA.Services.Interfaces;
 
 namespace PPA.Services;
 
-public class FlightBookingService : IService<FlightBooking>
+public class FlightBookingService : IFlightBookingService
 {
-    IDAO<FlightBooking> _dao;
-    public FlightBookingService(IDAO<FlightBooking> dao)
+    IFlightBookingDAO _dao;
+    public FlightBookingService(IFlightBookingDAO dao)
     { 
         _dao = dao;
     }
@@ -36,5 +36,10 @@ public class FlightBookingService : IService<FlightBooking>
     public async Task<FlightBooking?> FindByIdAsync(int id)
     {
         return await _dao.FindByIdAsync(id);
+    }
+
+    public async Task<IEnumerable<FlightBooking>?> GetAllBookingsForFlightAndClassAsync(int flightId, int classId)
+    {
+        return await _dao.GetAllBookingsForFlightAndClassAsync(flightId, classId);
     }
 }

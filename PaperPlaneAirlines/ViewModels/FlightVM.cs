@@ -10,4 +10,6 @@ public class FlightVM
     public DateTime Arrival { get; set; }
     public required CityVM FromCity { get; set; }
     public required CityVM ToCity { get; set; }
+    
+    public string? SeatNumber { get; set; }
 }

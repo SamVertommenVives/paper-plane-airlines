@@ -14,8 +14,7 @@ public class FlightRouteService : IFlightRouteService
         _flightRouteDao = flightRouteDao;
     }
 
-    public async Task<IEnumerable<List<FlightRoute>?>> GetFlightRoutesAsync(
-        int startAirportId,
+    public async Task<IEnumerable<List<FlightRoute>?>> GetFlightRoutesAsync(int startAirportId,
         int targetAirportId)
     {
         var visited = new HashSet<int>();

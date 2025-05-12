@@ -27,6 +27,14 @@
             if (Model.Last() == flight)
             {
                 <div class="col">
+                    <div> @flight.FromCity.Name </div>
+                    <div class="fst-italic">
+                        @flight.Departure.ToShortDateString()
+                        @flight.Departure.ToShortTimeString()
+                    </div>
+                </div>
+                <div class="col-1 align-content-center">→</div>
+                <div class="col">
                     <div>@flight.ToCity.Name</div>
                     <div class="fst-italic">
                         @flight.Arrival.ToShortDateString()

@@ -61,7 +61,7 @@ public class FlightDAO : IFlightDAO
         }
     }
 
-    public async Task<IEnumerable<Flight>?> GetFirstTenBookableFlights()
+    public async Task<IEnumerable<Flight?>?> GetFirstTenBookableFlights()
     {
         try
         {
@@ -121,8 +121,36 @@ public class FlightDAO : IFlightDAO
             .OrderBy(f => f.Departure)
             .ToListAsync();
 
-        return flights
-            .FirstOrDefault(f => f.PlaneNavigation.EconomySeats - f.SeatsBooked >= numberOfPassengers);
+        //
+        return flights.FirstOrDefault();
     }
+    
+    public async Task<Flight?> GetNextEconomyFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers)
+    {
+        var flights = await _dbContext.Flights
+            .Where(f => f.FlightRoute == routeId && f.Departure >= minDepartureDate && f.PlaneNavigation.EconomySeats - f.SeatsBooked >= numberOfPassengers)
+            .Include(f => f.FlightRouteNavigation)
+            .Include(f => f.PlaneNavigation)
+            .Include(f => f.FromCityNavigation)
+            .Include(f => f.ToCityNavigation)
+            .OrderBy(f => f.Departure)
+            .ToListAsync();
 
+        //
+        return flights.FirstOrDefault();
+    }
+    
+    public async Task<Flight?> GetNextBusinessFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers)
+    {
+        var flights = await _dbContext.Flights
+            .Where(f => f.FlightRoute == routeId && f.Departure >= minDepartureDate && f.PlaneNavigation.BusinessSeats - f.SeatsBooked >= numberOfPassengers)
+            .Include(f => f.FlightRouteNavigation)
+            .Include(f => f.PlaneNavigation)
+            .Include(f => f.FromCityNavigation)
+            .Include(f => f.ToCityNavigation)
+            .OrderBy(f => f.Departure)
+            .ToListAsync();
+        
+        return flights.FirstOrDefault();
+    }
 }

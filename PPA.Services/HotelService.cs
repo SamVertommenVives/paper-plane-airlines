@@ -1,3 +1,4 @@
+using System.Collections;
 using Newtonsoft.Json;
 using PPA.Services.Interfaces;
 using System.Net.Http;
@@ -28,7 +29,21 @@ public class HotelService : IHotelService
 
         var json = await response.Content.ReadAsStringAsync();
         dynamic data = JsonConvert.DeserializeObject(json)!;
-        return data.data[0]?.dest_id;
+        
+        Console.WriteLine(data.ToString());
+
+        var cityId = "";
+
+        foreach (var dest in data.data)
+        {
+            if (dest.search_type == "city")
+            {
+                cityId = dest.dest_id;
+                break;
+            }
+        }
+
+        return cityId;
     }
 
     public async Task<List<Hotel>> GetHotelsAsync(string city, DateTime fromDate, DateTime? toDate)

@@ -302,8 +302,6 @@ public partial class PPADbContext : DbContext
 
             entity.HasIndex(e => e.Meal, "IX_FlightBooking_Meal");
 
-            entity.Property(e => e.SeatNumber).HasMaxLength(50);
-
             entity.HasOne(d => d.BookingNavigation).WithMany(p => p.FlightBookings)
                 .HasForeignKey(d => d.Booking)
                 .OnDelete(DeleteBehavior.ClientSetNull)

@@ -65,7 +65,7 @@
 
                 <div class="form-group col-sm-3">
                     <label class="form-label" asp-for="FromDate">Wanneer wil je vertrekken?</label>
-                    <input id="fromDate" type="date" class="form-control" asp-for="FromDate" min="@DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")" value="@DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")" max="@DateTime.Now.AddMonths(6).ToString("yyyy-MM-dd")"/>
+                    <input id="fromDate" type="date" class="form-control" asp-for="FromDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" max="@DateTime.Now.AddMonths(6).ToString("yyyy-MM-dd")"/>
                 </div>
                 @*TODO: would be nice if the toDate is hidden when Enkele vlucht is selected*@
                 <div class="form-group col-sm-3">

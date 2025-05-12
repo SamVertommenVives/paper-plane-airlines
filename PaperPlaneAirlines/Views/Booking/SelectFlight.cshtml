@@ -18,7 +18,16 @@
             }
         </div>
         <div class="card-body">
-            @await Html.PartialAsync("_BookingOptionsPartial", @Model.BookingOptions)
+            @{
+                if (Model.BookingOptions.Count == 0)
+                {
+                    <div class="text-center fst-italic">No flights found. Try different filter settings.</div>
+                }
+                else
+                {
+                    @await Html.PartialAsync("_BookingOptionsPartial", @Model.BookingOptions)        
+                }
+            }
         </div>
     </div>
 </section>

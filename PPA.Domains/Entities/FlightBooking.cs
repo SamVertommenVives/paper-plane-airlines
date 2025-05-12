@@ -13,7 +13,7 @@ public partial class FlightBooking
 
     public int? Meal { get; set; }
 
-    public string SeatNumber { get; set; } = null!;
+    public int SeatNumber { get; set; }
 
     public int Class { get; set; }
 
