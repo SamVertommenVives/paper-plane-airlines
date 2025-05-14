@@ -90,9 +90,10 @@ public class BookingController : Controller
         {
             try
             {
-                await AddBookingToDb(userId, booking.OutboundFlight, booking.TravelClass.Id,
+                BookingOptionVM outboundFlight = await AddBookingToDb(userId, booking.OutboundFlight, booking.TravelClass.Id,
                     booking.NumberOfPassengers);
                 Console.WriteLine("outbound bookingOption successfully added to the Db");
+                booking.OutboundFlight = outboundFlight;
             }
             catch (Exception e)
             {
@@ -105,8 +106,10 @@ public class BookingController : Controller
         {
             try
             {
-                await AddBookingToDb(userId, booking.ReturnFlight, booking.TravelClass.Id, booking.NumberOfPassengers);
+                BookingOptionVM returnFlight = await AddBookingToDb(userId, booking.ReturnFlight, booking.TravelClass.Id,
+                    booking.NumberOfPassengers);
                 Console.WriteLine("return bookingOption successfully added to the Db");
+                booking.ReturnFlight = returnFlight;
             }
             catch (Exception e)
             {
@@ -142,7 +145,7 @@ public class BookingController : Controller
         return PartialView("_HotelDetailsPartial", hotels);
     }
 
-    private async Task AddBookingToDb(string userId, BookingOptionVM bookingOption, int travelClassId,
+    private async Task<BookingOptionVM> AddBookingToDb(string userId, BookingOptionVM bookingOption, int travelClassId,
         int numberOfPassengers)
     {
         BookingCRUD booking = new BookingCRUD
@@ -155,6 +158,8 @@ public class BookingController : Controller
             var mappedBooking = _mapper.Map<Booking>(booking);
             var bookingId = await _bookingService.AddAsync(mappedBooking);
             Console.WriteLine("booking successfully added to the Db with id: " + bookingId);
+            
+            bookingOption.BookingOptionId = bookingId;
 
             foreach (var flight in bookingOption.Flights)
             {
@@ -163,9 +168,12 @@ public class BookingController : Controller
                 {
                     int seatNumber = await FindNextAvailableSeat(flight.Id, travelClassId);
                     await AddFlightBookingToDb(bookingId, flight.Id, bookingOption.Menu?.Id, seatNumber, travelClassId);
+                    flight.SeatNumber.Add("#" + seatNumber);
                     counter--;
                 }
             }
+
+            return bookingOption;
         }
         catch (Exception e)
         {
@@ -176,29 +184,26 @@ public class BookingController : Controller
 
     private async Task<int> FindNextAvailableSeat(int flightId, int travelClassId)
     {
-        
         var bookingsForFlight =
             await _flightBookingService.GetAllBookingsForFlightAndClassAsync(flightId, travelClassId);
         var bookedSeats = bookingsForFlight.ToList();
-        
+
         var found = false;
         var index = 0;
 
-        if (bookedSeats.Count > 0)
+
+        while (!found && index < bookedSeats.Count)
         {
-            while (!found && index < bookedSeats.Count)
+            if (bookedSeats[index].SeatNumber == index + 1)
             {
-                if (bookedSeats[index].SeatNumber == index + 1)
-                {
-                    index++;
-                }
-                else
-                {
-                    found = true;    
-                }
+                index++;
+            }
+            else
+            {
+                found = true;
             }
         }
-        
+
         return index + 1;
     }
 

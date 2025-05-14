@@ -45,6 +45,7 @@ public class AutoMapperProfile : Profile
                 ));
 
         CreateMap<Hotel, HotelVM>();
-
+        
+        CreateMap<Booking, BookingVM>();
     }
 }
