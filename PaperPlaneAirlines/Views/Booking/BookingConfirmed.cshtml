@@ -15,8 +15,8 @@
                 <div>Heenvlucht boekingnummer: #@Model.OutboundFlight.BookingOptionId - @Model.OutboundFlight.Price?.ToString("C")</div>
                 <div>Menu: @Model.OutboundFlight.Menu?.Name - @Model.OutboundFlight.Menu?.Price?.ToString("C")</div>
                 <div>Totaal: @{
-                                 var totaal = Model.OutboundFlight.Price + Model.OutboundFlight.Menu?.Price;
-                                 @totaal?.ToString("C")
+                                 var totaalHeenvlucht = Model.OutboundFlight.Price + (Model.OutboundFlight.Menu?.Price ?? 0 );
+                                 @totaalHeenvlucht?.ToString("C")
                              }</div>
             </div>
             <div class="card-body card-group">
@@ -26,18 +26,21 @@
 
         @if (Model.ReturnFlight != null)
         {
-            <div class="card text-start">
+            <div class="card text-start mt-3">
                 <div class="card-header fw-bold d-inline-flex justify-content-between">
-                    <div>Terugvlucht boekingnummer: @Model.OutboundFlight.BookingOptionId</div>
-                    <div>Menu: @Model.ReturnFlight.Menu.Name</div>
-                    <div>@Model.ReturnFlight.Price?.ToString("C")</div>
+                    <div>Terugvlucht boekingnummer: #@Model.ReturnFlight.BookingOptionId - @Model.ReturnFlight.Price?.ToString("C")</div>
+                    <div>Menu: @Model.ReturnFlight.Menu?.Name - @Model.ReturnFlight.Menu?.Price?.ToString("C")</div>
+                    <div>Totaal: @{
+                            var totaalTerugvlucht = Model.ReturnFlight.Price + (Model.ReturnFlight.Menu?.Price ?? 0 );
+                            @totaalTerugvlucht?.ToString("C")
+                        }</div>
                 </div>
                 <div class="card-body card-group">
                     @await Html.PartialAsync("_BookingOptionDetails", Model.ReturnFlight)
                 </div>
             </div>
         }
-        <div class="card card-header p-4 mt-4">
+        <div class="card card-header p-4 mt-3">
             <div class="d-inline-flex justify-content-end h3">
                 <div class="me-3">Totaal van de boeking:</div>
                 <div>
@@ -46,11 +49,11 @@
                             Model.ReturnFlight != null ? 
                                 Model.ReturnFlight.Price + 
                                 Model.OutboundFlight.Price +
-                                Model.ReturnFlight.Menu?.Price +
-                                Model.OutboundFlight.Menu?.Price
+                                (Model.ReturnFlight.Menu?.Price ?? 0) +
+                                (Model.OutboundFlight.Menu?.Price ?? 0)
                                 
                                 : Model.OutboundFlight.Price +
-                                  Model.OutboundFlight.Menu?.Price;
+                                  (Model.OutboundFlight.Menu?.Price ?? 0);
                         @totalPrice?.ToString("C");
                     }
                 </div>

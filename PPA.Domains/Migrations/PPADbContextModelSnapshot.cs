@@ -262,7 +262,6 @@ namespace PPA.Domains.Migrations
 
                     b.Property<string>("User")
                         .IsRequired()
-                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int?>("UserDiscount")
@@ -271,11 +270,11 @@ namespace PPA.Domains.Migrations
                     b.HasKey("Id")
                         .HasName("PK_booking");
 
-                    b.HasIndex("Cancelation");
+                    b.HasIndex(new[] { "Cancelation" }, "IX_Booking_Cancelation");
 
-                    b.HasIndex("User");
+                    b.HasIndex(new[] { "User" }, "IX_Booking_User");
 
-                    b.HasIndex("UserDiscount");
+                    b.HasIndex(new[] { "UserDiscount" }, "IX_Booking_UserDiscount");
 
                     b.ToTable("Booking", (string)null);
                 });
@@ -301,7 +300,7 @@ namespace PPA.Domains.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Refund");
+                    b.HasIndex(new[] { "Refund" }, "IX_Cancelation_Refund");
 
                     b.ToTable("Cancelation", (string)null);
                 });
@@ -314,7 +313,7 @@ namespace PPA.Domains.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("Airport")
+                    b.Property<int>("Airport")
                         .HasColumnType("int");
 
                     b.Property<string>("Country")
@@ -331,7 +330,7 @@ namespace PPA.Domains.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Airport");
+                    b.HasIndex(new[] { "Airport" }, "IX_City_Airport");
 
                     b.ToTable("City", (string)null);
                 });
@@ -353,9 +352,9 @@ namespace PPA.Domains.Migrations
                     b.HasKey("Id")
                         .HasName("PK_RouteDiscount");
 
-                    b.HasIndex("City");
+                    b.HasIndex(new[] { "City" }, "IX_CityDiscount_City");
 
-                    b.HasIndex("Discount");
+                    b.HasIndex(new[] { "Discount" }, "IX_CityDiscount_Discount");
 
                     b.ToTable("CityDiscount", (string)null);
                 });
@@ -448,13 +447,13 @@ namespace PPA.Domains.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FlightRoute");
+                    b.HasIndex(new[] { "FlightRoute" }, "IX_Flight_FlightRoute");
 
-                    b.HasIndex("FromCity");
+                    b.HasIndex(new[] { "FromCity" }, "IX_Flight_FromCity");
 
-                    b.HasIndex("Plane");
+                    b.HasIndex(new[] { "Plane" }, "IX_Flight_Plane");
 
-                    b.HasIndex("ToCity");
+                    b.HasIndex(new[] { "ToCity" }, "IX_Flight_ToCity");
 
                     b.ToTable("Flight", (string)null);
                 });
@@ -479,25 +478,23 @@ namespace PPA.Domains.Migrations
                     b.Property<int?>("FlightDiscount")
                         .HasColumnType("int");
 
-                    b.Property<int>("Meal")
+                    b.Property<int?>("Meal")
                         .HasColumnType("int");
 
-                    b.Property<string>("SeatNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<int>("SeatNumber")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Booking");
+                    b.HasIndex(new[] { "Booking" }, "IX_FlightBooking_Booking");
 
-                    b.HasIndex("Class");
+                    b.HasIndex(new[] { "Class" }, "IX_FlightBooking_Class");
 
-                    b.HasIndex("Flight");
+                    b.HasIndex(new[] { "Flight" }, "IX_FlightBooking_Flight");
 
-                    b.HasIndex("FlightDiscount");
+                    b.HasIndex(new[] { "FlightDiscount" }, "IX_FlightBooking_FlightDiscount");
 
-                    b.HasIndex("Meal");
+                    b.HasIndex(new[] { "Meal" }, "IX_FlightBooking_Meal");
 
                     b.ToTable("FlightBooking", (string)null);
                 });
@@ -524,16 +521,11 @@ namespace PPA.Domains.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Airport_1");
+                    b.HasIndex(new[] { "Airport_1" }, "IX_FlightRoute_Airport_1");
 
-                    b.HasIndex("Airport_2");
+                    b.HasIndex(new[] { "Airport_2" }, "IX_FlightRoute_Airport_2");
 
-                    b.ToTable("FlightRoute", null, t =>
-                        {
-                            t.HasTrigger("trg_CalculateDistance");
-                        });
-
-                    b.HasAnnotation("SqlServer:UseSqlOutputClause", false);
+                    b.ToTable("FlightRoute", (string)null);
                 });
 
             modelBuilder.Entity("PPA.Domains.Entities.Meal", b =>
@@ -557,6 +549,9 @@ namespace PPA.Domains.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(50)");
 
+                    b.Property<double?>("Price")
+                        .HasColumnType("float");
+
                     b.Property<string>("Type")
                         .HasMaxLength(10)
                         .IsUnicode(false)
@@ -564,7 +559,7 @@ namespace PPA.Domains.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LocalMealFor");
+                    b.HasIndex(new[] { "LocalMealFor" }, "IX_Meal_LocalMealFor");
 
                     b.ToTable("Meal", (string)null);
                 });
@@ -637,14 +632,13 @@ namespace PPA.Domains.Migrations
 
                     b.Property<string>("User")
                         .IsRequired()
-                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Discount");
+                    b.HasIndex(new[] { "Discount" }, "IX_UserDiscount_Discount");
 
-                    b.HasIndex("User");
+                    b.HasIndex(new[] { "User" }, "IX_UserDiscount_User");
 
                     b.ToTable("UserDiscount", (string)null);
                 });
@@ -748,6 +742,8 @@ namespace PPA.Domains.Migrations
                     b.HasOne("PPA.Domains.Entities.Airport", "AirportNavigation")
                         .WithMany("Cities")
                         .HasForeignKey("Airport")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("FK_City_Airport");
 
                     b.Navigation("AirportNavigation");
@@ -835,7 +831,6 @@ namespace PPA.Domains.Migrations
                     b.HasOne("PPA.Domains.Entities.Meal", "MealNavigation")
                         .WithMany("FlightBookings")
                         .HasForeignKey("Meal")
-                        .IsRequired()
                         .HasConstraintName("FK_FlightBooking_Meal");
 
                     b.Navigation("BookingNavigation");
