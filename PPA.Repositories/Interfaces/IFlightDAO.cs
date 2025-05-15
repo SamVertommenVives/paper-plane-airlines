@@ -5,7 +5,9 @@ namespace PPA.Repositories.Interfaces;
 
 public interface IFlightDAO : IDAO<Flight>
 {
-    Task<IEnumerable<Flight>?> GetFirstTenBookableFlights();
+    Task<IEnumerable<Flight?>?> GetFirstTenBookableFlights();
     Task<IEnumerable<Flight>?> SearchFlights(int fromCityId, int? toCityId, DateTime fromDate);
     Task<Flight?> GetNextFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers);
+    Task<Flight?> GetNextEconomyFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers);
+    Task<Flight?> GetNextBusinessFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers);
 }

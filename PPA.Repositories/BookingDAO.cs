@@ -79,7 +79,11 @@ public class BookingDAO : IDAO<Booking>
         try
         {
             return await _dbContext.Bookings.Where(b => b.Id == id)
-                .Include(b => b.FlightBookings)
+                .Include(b => b.FlightBookings.AsQueryable()
+                    .Include(fb => fb.FlightNavigation)
+                    .Include(fb => fb.FlightNavigation.PlaneNavigation)
+                    .Include(fb => fb.MealNavigation)
+                )
                 .Include(b => b.UserDiscountNavigation)
                 .FirstOrDefaultAsync();
         }

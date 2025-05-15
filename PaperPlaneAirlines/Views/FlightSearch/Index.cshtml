@@ -8,18 +8,22 @@
 
 <div class="container">
     <section class=" d-flex justify-content-center mb-5">
-        <form method="post" asp-action="BookingOverview" asp-controller="Booking" class="w-75">
-            <div class="row mb-2">
-                <div class="form-group col-sm-4 align-content-center">
+        <form id="searchForm" method="post" asp-action="BookingOverview" asp-controller="Booking" class="w-75">
+            <div class="d-flex justify-content-between gap-3 mb-3 w-100">
+                <div class="form-group flex-fill align-content-center">
                     <select asp-for="RoundTrip" id="roundTrip" class="form-control">
                         <option value="false" selected>Enkele reis</option>
                         <option value="true">Retour</option>
                     </select>
                 </div>
-                <div class="form-group col-sm-4 align-content-center">
-                    <input class="form-control" type="number" asp-for="NumberOfPassengers" value="1"/>
+                <div class="form-group d-flex align-items-end">
+                    <div class="input-group">
+                        <input class="form-control" type="number" asp-for="NumberOfPassengers" min="1" value="1"/>
+                        <span class="input-group-text">👤</span>
+                    </div>
+                    
                 </div>
-                <div class="form-group col-sm-4 align-content-center">
+                <div class="form-group flex-fill align-content-center">
                     <select asp-for="SelectedTravelClassId" id="travelClass" class="form-control">
                         @foreach (var travelClass in Model.SelectionOptionsTravelClass!)
                         {
@@ -28,8 +32,8 @@
                     </select>
                 </div>
             </div>
-            <div class="row mb-3">
-                <div class="form-group col-sm-3 align-content-center">
+            <div class="d-flex justify-content-between gap-3 mb-3">
+                <div class="form-group flex-fill align-content-center">
                     <label asp-for="SelectedFromCityId" class="form-label">Waar wil je vertrekken?</label>
                     <select asp-for="SelectedFromCityId" id="fromCity" class="form-control">
                         @if (Model.SelectionOptionsCity == null)
@@ -45,7 +49,7 @@
                         }
                     </select>
                 </div>
-                <div class="form-group col-sm-3 align-content-center">
+                <div class="form-group flex-fill align-content-center">
                     <label asp-for="SelectedToCityId" class="form-label">Waar wil je naartoe?</label>
                     <select asp-for="SelectedToCityId" id="toCity" class="form-control" required>
                         <option value=""> - </option>
@@ -63,12 +67,11 @@
                     </select>
                 </div>
 
-                <div class="form-group col-sm-3">
+                <div class="form-group flex-fill">
                     <label class="form-label" asp-for="FromDate">Wanneer wil je vertrekken?</label>
-                    <input id="fromDate" type="date" class="form-control" asp-for="FromDate" min="@DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")" value="@DateTime.Now.AddDays(3).ToString("yyyy-MM-dd")" max="@DateTime.Now.AddMonths(6).ToString("yyyy-MM-dd")"/>
+                    <input id="fromDate" type="date" class="form-control" asp-for="FromDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" value="@DateTime.Now.ToString("yyyy-MM-dd")" max="@DateTime.Now.AddMonths(6).ToString("yyyy-MM-dd")"/>
                 </div>
-                @*TODO: would be nice if the toDate is hidden when Enkele vlucht is selected*@
-                <div class="form-group col-sm-3">
+                <div id="toDateSelector" class="form-group flex-fill" style="display: none;">
                     <label class="form-label" asp-for="ToDate">Wanneer wil je terugkomen?</label>
                     <input id="toDate" type="date" class="form-control" asp-for="ToDate"/>
                 </div>
@@ -77,6 +80,7 @@
                 <div class="form-group align-content-center col">
                     <button type="submit" class="btn btn-light btn-outline-dark w-100">Zoek vluchten</button>
                 </div>
+                <div id="customValidationMessage" class="invalid-feedback d-block mt-1 text-center"></div>
             </div>
         </form>
     </section>
@@ -92,3 +96,61 @@
 
     </section>
 </div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $("#toCity").on("change", function () {
+                
+                var fromCity = $("#fromCity").val();
+                var toCity = $(this).val();
+
+                if (fromCity === toCity && toCity !== "") {
+                    $(this).addClass("is-invalid");
+                } else {
+                    $(this).removeClass("is-invalid");
+                }
+            });
+            
+            $("#fromCity").on("change", function () {
+                $("#toCity").trigger("change"); 
+            });
+            
+            $('#roundTrip').on('change', function () {
+                
+                if ($("#roundTrip").val() === "true") {
+                    var toDateSelector = $("#toDateSelector");
+                    toDateSelector.show();
+                    $("#toDate").prop('required', true);
+                } else {
+                    $("#toDateSelector").hide();
+                }
+            });
+            
+            $('#searchForm').submit( function (e) {
+                var fromCity = $("#fromCity");
+                var toCity = $("#toCity");
+                
+                if (fromCity.val() === toCity.val()) {
+                    e.preventDefault();
+                    toCity.addClass("is-invalid");
+                    $("#customValidationMessage").text("De bestemming moet verschillen van de vertrekplaats.")
+                } else {
+                    toCity.removeClass("is-invalid");
+                }
+
+                var fromDate = $("#fromDate");
+                var toDate = $("#toDate");
+
+                if (fromDate.val() > toDate.val()) {
+                    e.preventDefault();
+                    toDate.addClass("is-invalid");
+                    $("#customValidationMessage").text("De retourdatum kan niet voor de vertrekdatum liggen.")
+                } else {
+                    toCity.removeClass("is-invalid");
+                }
+            })
+        });
+    </script>
+}

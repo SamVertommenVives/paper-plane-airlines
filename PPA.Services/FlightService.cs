@@ -40,7 +40,7 @@ public class FlightService : IFlightService
         return await _dao.FindByIdAsync(Id);
     }
 
-    public async Task<IEnumerable<Flight>?> GetFirstTenBookableFlights()
+    public async Task<IEnumerable<Flight?>?> GetFirstTenBookableFlights()
     {
         return await _dao.GetFirstTenBookableFlights();
     }
@@ -53,5 +53,15 @@ public class FlightService : IFlightService
     public async Task<Flight?> GetNextFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers)
     {
         return await _dao.GetNextFlightForRoute(routeId, minDepartureDate, numberOfPassengers);
+    }
+    
+    public async Task<Flight?> GetNextEconomyFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers)
+    {
+        return await _dao.GetNextEconomyFlightForRoute(routeId, minDepartureDate, numberOfPassengers);
+    }
+    
+    public async Task<Flight?> GetNextBusinessFlightForRoute(int routeId, DateTime minDepartureDate, int numberOfPassengers)
+    {
+        return await _dao.GetNextBusinessFlightForRoute(routeId, minDepartureDate, numberOfPassengers);
     }
 }

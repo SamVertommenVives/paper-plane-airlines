@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -17,13 +18,16 @@ public class BookingController : Controller
     private readonly IService<Class> _classService;
     private readonly IMenuService _menuService;
     private readonly IService<Booking> _bookingService;
-    private readonly IService<FlightBooking> _flightBookingService;
+    private readonly IFlightBookingService _flightBookingService;
     private readonly IMapper _mapper;
     private readonly IHotelService _hotelService;
+    private readonly IFlightService _flightService;
     private readonly SendController _sendController;
 
     public BookingController(IBookingOptionService bookingOptionService, IMapper mapper, IService<City> cityService,
-        IService<Class> classService, IMenuService menuService, IService<Booking> bookingService, IService<FlightBooking> flightBookingService, IHotelService hotelService, SendController sendController)
+        IService<Class> classService, IMenuService menuService, IService<Booking> bookingService,
+        IFlightBookingService flightBookingService, IHotelService hotelService, SendController sendController,
+        IFlightService flightService)
     {
         _bookingOptionService = bookingOptionService;
         _mapper = mapper;
@@ -34,6 +38,7 @@ public class BookingController : Controller
         _flightBookingService = flightBookingService;
         _hotelService = hotelService;
         _sendController = sendController;
+        _flightService = flightService;
     }
 
     public async Task<IActionResult> BookingOverview()
@@ -70,55 +75,54 @@ public class BookingController : Controller
 
         return await BookingOverview();
     }
-    
+
     [Authorize]
     [HttpPost]
-    public async Task<IActionResult>
-        ConfirmBooking()
+    public async Task<IActionResult> ConfirmBooking()
     {
-        
         var bookingJson = HttpContext.Session.GetString("BookingVM");
         var booking =
             JsonConvert.DeserializeObject<BookingVM>(bookingJson ?? throw new NullReferenceException());
-        
+
         string? userId = User?.FindFirstValue(ClaimTypes.NameIdentifier);
-        
+
         if (booking.OutboundFlight != null)
         {
             try
             {
-                await AddBookingToDb(userId, booking.OutboundFlight, booking.TravelClass.Id);
+                BookingOptionVM outboundFlight = await AddBookingToDb(userId, booking.OutboundFlight, booking.TravelClass.Id,
+                    booking.NumberOfPassengers);
                 Console.WriteLine("outbound bookingOption successfully added to the Db");
+                booking.OutboundFlight = outboundFlight;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            
         }
-        
+
         if (booking.ReturnFlight != null)
         {
             try
             {
-                await AddBookingToDb(userId, booking.ReturnFlight, booking.TravelClass.Id);
+                BookingOptionVM returnFlight = await AddBookingToDb(userId, booking.ReturnFlight, booking.TravelClass.Id,
+                    booking.NumberOfPassengers);
                 Console.WriteLine("return bookingOption successfully added to the Db");
+                booking.ReturnFlight = returnFlight;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-            
         }
-        
+
         var email = User?.FindFirstValue(ClaimTypes.Email);
         if (email != null)
         {
             try
             {
-
                 Console.WriteLine("trying to send email to user");
                 await _sendController.SendConfirmationEmail(email);
             }
@@ -128,10 +132,10 @@ public class BookingController : Controller
                 throw;
             }
         }
-        
+
         return View("BookingConfirmed", booking);
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> GetHotelsPartial(string toCity, DateTime fromDate, DateTime toDate)
     {
@@ -141,34 +145,86 @@ public class BookingController : Controller
         return PartialView("_HotelDetailsPartial", hotels);
     }
 
-    private async Task AddBookingToDb(string userId, BookingOptionVM bookingOption, int travelClassId)
+    private async Task<BookingOptionVM> AddBookingToDb(string userId, BookingOptionVM bookingOption, int travelClassId,
+        int numberOfPassengers)
     {
         BookingCRUD booking = new BookingCRUD
-        { 
+        {
             User = userId,
         };
-        
+
         try
         {
             var mappedBooking = _mapper.Map<Booking>(booking);
             var bookingId = await _bookingService.AddAsync(mappedBooking);
             Console.WriteLine("booking successfully added to the Db with id: " + bookingId);
             
+            bookingOption.BookingOptionId = bookingId;
+
             foreach (var flight in bookingOption.Flights)
             {
-                FlightBookingCRUD flightBookingCrud = new FlightBookingCRUD
+                int counter = numberOfPassengers;
+                while (counter > 0)
                 {
-                    Booking = bookingId,
-                    Flight = flight.Id,
-                    Meal = bookingOption.Menu?.Id,
-                    SeatNumber = flight.Plane + new Random().Next(0, 100),
-                    Class = travelClassId,
-                    FlightDiscount = null
-                };
-                
-                await _flightBookingService.AddAsync(_mapper.Map<FlightBooking>(flightBookingCrud));
-                Console.WriteLine("flightBooking successfully added to the Db");
+                    int seatNumber = await FindNextAvailableSeat(flight.Id, travelClassId);
+                    await AddFlightBookingToDb(bookingId, flight.Id, bookingOption.Menu?.Id, seatNumber, travelClassId);
+                    flight.SeatNumber.Add("#" + seatNumber);
+                    counter--;
+                }
             }
+
+            return bookingOption;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private async Task<int> FindNextAvailableSeat(int flightId, int travelClassId)
+    {
+        var bookingsForFlight =
+            await _flightBookingService.GetAllBookingsForFlightAndClassAsync(flightId, travelClassId);
+        var bookedSeats = bookingsForFlight.ToList();
+
+        var found = false;
+        var index = 0;
+
+
+        while (!found && index < bookedSeats.Count)
+        {
+            if (bookedSeats[index].SeatNumber == index + 1)
+            {
+                index++;
+            }
+            else
+            {
+                found = true;
+            }
+        }
+
+        return index + 1;
+    }
+
+
+    public async Task AddFlightBookingToDb(int bookingId, int flightId, int? menuId, int seatNumber, int travelClassId)
+    {
+        try
+        {
+            FlightBookingCRUD flightBookingCrud = new FlightBookingCRUD
+            {
+                Booking = bookingId,
+                Flight = flightId,
+                Meal = menuId,
+                //TODO: Seatnumber must be displayed in the booking overview
+                SeatNumber = seatNumber,
+                Class = travelClassId,
+                FlightDiscount = null
+            };
+
+            await _flightBookingService.AddAsync(_mapper.Map<FlightBooking>(flightBookingCrud));
+            Console.WriteLine("flightBooking successfully added to the Db");
         }
         catch (Exception e)
         {
@@ -200,11 +256,13 @@ public class BookingController : Controller
             FromCity = flightSearchVM.FromCity,
             ToCity = flightSearchVM.ToCity,
             RoundTrip = flightSearchVM.RoundTrip,
-            TravelClass = flightSearchVM.TravelClass
+            TravelClass = flightSearchVM.TravelClass,
+            NumberOfPassengers = flightSearchVM.NumberOfPassengers,
         };
 
         HttpContext.Session.SetString("BookingVM", JsonConvert.SerializeObject(booking));
     }
+
     public async Task<FlightSelectionVM> GetFlightSelection(int fromCityId, int toCityId, FlightType flightType)
     {
         var bookingJson = HttpContext.Session.GetString("BookingVM");
@@ -212,13 +270,15 @@ public class BookingController : Controller
             JsonConvert.DeserializeObject<BookingVM>(bookingJson ?? throw new NullReferenceException());
 
         var date = flightType == FlightType.Outbound ? booking.FromDate : booking.ToDate;
-        
+
         var bookingOptionsList = await _bookingOptionService.GetBookingOptionsAsync(
             fromCityId,
             toCityId,
-            (DateTime) date,
-            booking.NumberOfPassengers
+            (DateTime)date,
+            booking.NumberOfPassengers,
+            booking.TravelClass.Id
         );
+
         var bookingOptions = _mapper.Map<List<BookingOptionVM>>(bookingOptionsList);
 
         var counter = 1;
@@ -251,6 +311,7 @@ public class BookingController : Controller
 
         return flightSelection;
     }
+
     public async Task<FlightSelectionVM> SelectReturnFlight()
     {
         var bookingJson = HttpContext.Session.GetString("BookingVM");
@@ -267,7 +328,6 @@ public class BookingController : Controller
 
     public async Task<IActionResult> SetBookingOptionForSelectedFlight(int flightOptionId)
     {
-        
         var bookingJson = HttpContext.Session.GetString("BookingVM");
         var booking = JsonConvert.DeserializeObject<BookingVM>(bookingJson ?? throw new NullReferenceException());
 
@@ -333,11 +393,11 @@ public class BookingController : Controller
             JsonConvert.DeserializeObject<MenuSelectionVM>(menuSelectionJson ?? throw new NullReferenceException());
 
         var selectedMenu = await _menuService.FindByIdAsync(selectedMenuId);
-        
+
         var selectedFlight = selection.BookingOption.FlightType == FlightType.Outbound
             ? booking.OutboundFlight
             : booking.ReturnFlight;
-        
+
         selectedFlight.Menu = _mapper.Map<MenuVM>(selectedMenu);
 
         HttpContext.Session.SetString("BookingVM", JsonConvert.SerializeObject(booking));

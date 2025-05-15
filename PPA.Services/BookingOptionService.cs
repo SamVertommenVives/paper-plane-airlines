@@ -20,7 +20,7 @@ public class BookingOptionService : IBookingOptionService
         _cityService = cityService;
     }
 
-    public async Task<List<BookingOption>?> GetBookingOptionsAsync(int FromCityId, int ToCityId, DateTime FromDate, int NumberOfPassengers)
+    public async Task<List<BookingOption>?> GetBookingOptionsAsync(int FromCityId, int ToCityId, DateTime FromDate, int NumberOfPassengers, int travelClassId)
     {
         List<BookingOption>? bookingOptions = new List<BookingOption>();
         
@@ -34,12 +34,21 @@ public class BookingOptionService : IBookingOptionService
         foreach (var routeOption in routeOptions)
         {
             DateTime departureDate = FromDate;
-            List<Flight> flights = new List<Flight>();
+            List<Flight?> flights = new List<Flight?>();
             double price = 0;
             foreach (var flightRoute in routeOption)
             {
+                
                 //find next flight
-                Flight flight = await _flightService.GetNextFlightForRoute(flightRoute.Id, departureDate, NumberOfPassengers);
+                Flight? flight = travelClassId == 1
+                    ? await _flightService.GetNextEconomyFlightForRoute(flightRoute.Id, departureDate,
+                        NumberOfPassengers)
+                    : await _flightService.GetNextBusinessFlightForRoute(flightRoute.Id, departureDate,
+                        NumberOfPassengers);
+                
+                //TODO: perhaps a more elegant way to tell the client no flights where found
+                if (flight == null) return null;
+                
                 flights.Add(flight);
                 price += CalculatePrice(flight);
                 departureDate = flight.Arrival.AddHours(2);
@@ -49,7 +58,7 @@ public class BookingOptionService : IBookingOptionService
 
             BookingOption bookingOption = new BookingOption
             {
-                Flights = flights,
+                Flights = flights!,
                 Price = price
             };
             
@@ -64,11 +73,11 @@ public class BookingOptionService : IBookingOptionService
         List<BookingOption>? bookingOptions = new List<BookingOption>();
         var flights = await _flightService.GetFirstTenBookableFlights();
         
-        foreach (var flight in flights)
+        foreach (var flight in flights!)
         {
             BookingOption bookingOption = new BookingOption
             {
-                Flights = [flight],
+                Flights = [flight!],
                 Price = CalculatePrice(flight)
             };
             bookingOptions.Add(bookingOption);
@@ -77,7 +86,7 @@ public class BookingOptionService : IBookingOptionService
         return bookingOptions;
     }
 
-    private double CalculatePrice(Flight flight)
+    private double CalculatePrice(Flight? flight)
     {
         return flight.FlightRouteNavigation.Distance * PRICE_PER_KM;
     }
@@ -87,5 +96,6 @@ public class BookingOption
 {
     public List<Flight>? Flights { get; set; }
     public Discount? Reduction { get; set; }
+    public String? SeatNumber { get; set; }
     public double? Price { get; set; }
 }

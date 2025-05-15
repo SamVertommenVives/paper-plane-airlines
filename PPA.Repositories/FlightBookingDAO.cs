@@ -5,7 +5,7 @@ using PPA.Repositories.Interfaces;
 
 namespace PPA.Repositories;
 
-public class FlightBookingDAO : IDAO<FlightBooking>
+public class FlightBookingDAO : IFlightBookingDAO
 {
     private readonly PPADbContext _dbContext;
 
@@ -94,5 +94,12 @@ public class FlightBookingDAO : IDAO<FlightBooking>
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    
+
+    public async Task<IEnumerable<FlightBooking>> GetAllBookingsForFlightAndClassAsync(int flightId, int classId)
+    {
+        return await _dbContext.FlightBookings.Where( fb => fb.Flight == flightId && fb.Class == classId).ToListAsync();
     }
 }

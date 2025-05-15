@@ -34,7 +34,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col">
-                            @await Html.PartialAsync("_FlightDetailsPartial", @Model.OutboundFlight.Flights)
+                            @await Html.PartialAsync("_FlightDetailsPartial", Model.OutboundFlight.Flights)
                         </div>
 
                         @if (Model.OutboundFlight.Menu == null)

@@ -1,4 +1,4 @@
-@model PaperPlaneAirlines.ViewModels.BookingVM;
+@model PaperPlaneAirlines.ViewModels.BookingVM
 
 @{
     ViewData["Title"] = "Booking Confirmed";
@@ -9,12 +9,65 @@
         <h1 class="mb-4">Boeking Bevestigd!</h1>
         <p class="lead">Bedankt voor uw vertrouwen in Paper Plane Airlines ✈️</p>
         <p>Je ontvangt weldra een bevestigingsemail met de details van je boeking</p>
+
+        <div class="card text-start">
+            <div class="card-header fw-bold d-inline-flex justify-content-between">
+                <div>Heenvlucht boekingnummer: #@Model.OutboundFlight.BookingOptionId - @Model.OutboundFlight.Price?.ToString("C")</div>
+                <div>Menu: @Model.OutboundFlight.Menu?.Name - @Model.OutboundFlight.Menu?.Price?.ToString("C")</div>
+                <div>Totaal: @{
+                                 var totaalHeenvlucht = Model.OutboundFlight.Price + (Model.OutboundFlight.Menu?.Price ?? 0 );
+                                 @totaalHeenvlucht?.ToString("C")
+                             }</div>
+            </div>
+            <div class="card-body card-group">
+                @await Html.PartialAsync("_BookingOptionDetails", Model.OutboundFlight)
+            </div>
+        </div>
+
+        @if (Model.ReturnFlight != null)
+        {
+            <div class="card text-start mt-3">
+                <div class="card-header fw-bold d-inline-flex justify-content-between">
+                    <div>Terugvlucht boekingnummer: #@Model.ReturnFlight.BookingOptionId - @Model.ReturnFlight.Price?.ToString("C")</div>
+                    <div>Menu: @Model.ReturnFlight.Menu?.Name - @Model.ReturnFlight.Menu?.Price?.ToString("C")</div>
+                    <div>Totaal: @{
+                            var totaalTerugvlucht = Model.ReturnFlight.Price + (Model.ReturnFlight.Menu?.Price ?? 0 );
+                            @totaalTerugvlucht?.ToString("C")
+                        }</div>
+                </div>
+                <div class="card-body card-group">
+                    @await Html.PartialAsync("_BookingOptionDetails", Model.ReturnFlight)
+                </div>
+            </div>
+        }
+        <div class="card card-header p-4 mt-3">
+            <div class="d-inline-flex justify-content-end h3">
+                <div class="me-3">Totaal van de boeking:</div>
+                <div>
+                    @{
+                        var totalPrice = 
+                            Model.ReturnFlight != null ? 
+                                Model.ReturnFlight.Price + 
+                                Model.OutboundFlight.Price +
+                                (Model.ReturnFlight.Menu?.Price ?? 0) +
+                                (Model.OutboundFlight.Menu?.Price ?? 0)
+                                
+                                : Model.OutboundFlight.Price +
+                                  (Model.OutboundFlight.Menu?.Price ?? 0);
+                        @totalPrice?.ToString("C");
+                    }
+                </div>
+            </div>
+            
+        </div>
+        
         <a href="/" class="btn btn-light btn-outline-dark mt-4 w-auto align-self-center">Zoek een volgende vlucht</a>
     </div>
     <div class="mt-5">
         <h2 class="mb-3">Interessante Hotels in @Model.ToCity.Name</h2>
         <div class="row" id="hotels-placeholder">
-            <p>Loading...<p/>
+            <p>Loading...
+            <p/>
         </div>
     </div>
 </div>
