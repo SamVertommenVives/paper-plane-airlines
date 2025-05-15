@@ -9,10 +9,7 @@ namespace PaperPlaneAirlines.Controllers;
 
 public class FlightSearchController : Controller
 {
-    private readonly IFlightDAO _flightService;
     private readonly IService<City> _cityService;
-    private readonly IMenuDAO _menuService;
-    //private readonly IService<Discount> _discountService;
     private readonly IService<Class> _classService;
     private readonly IBookingOptionService _bookingOptionService;
 
@@ -20,18 +17,14 @@ public class FlightSearchController : Controller
 
 
     public FlightSearchController(
-        IFlightDAO flightService,
+        
         IService<City> cityService,
-        IMenuDAO menuService,
-        //IService<Discount> discountService,
         IBookingOptionService bookingOptionService,
         IMapper mapper,
         IService<Class> classService)
     {
-        _flightService = flightService;
+        
         _cityService = cityService;
-        _menuService = menuService;
-        //_discountService = discountService;
         _bookingOptionService = bookingOptionService;
         _mapper = mapper;
         _classService = classService;

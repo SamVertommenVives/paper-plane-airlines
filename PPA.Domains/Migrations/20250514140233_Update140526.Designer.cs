@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PPA.Domains.Data;
 
 #nullable disable
 
-namespace PPA.Domains.Migrations
+namespace PPA.Domains.Entities
 {
     [DbContext(typeof(PPADbContext))]
-    partial class PPADbContextModelSnapshot : ModelSnapshot
+    [Migration("20250514140233_Update140526")]
+    partial class Update140526
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
